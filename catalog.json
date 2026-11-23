@@ -1,0 +1,374 @@
+{
+ "version": 1,
+ "updated": "2026-11-23",
+ "types": {
+  "theory": "Теорія",
+  "slides": "Презентація",
+  "video": "Відеоурок",
+  "trainer": "Тренажер",
+  "test": "Контрольна"
+ },
+ "platforms": [
+  {
+   "title": "Клас-код",
+   "desc": "Практичні з веб-дизайну та Python під контролем учителя: вхід за кодом завдання.",
+   "url": "https://mihaluchv.github.io/online-education/",
+   "art": "web",
+   "color": "#0EA5E9"
+  },
+  {
+   "title": "Групова робота",
+   "desc": "Спільна кімната з інтерактивним завданням: увійди з ім’ям і прізвищем за кодом кімнати.",
+   "url": "https://mihaluchv.github.io/online-group/",
+   "art": "net",
+   "color": "#14B8A6"
+  }
+ ],
+ "classes": [
+  {
+   "id": "5",
+   "label": "5",
+   "title": "5 клас",
+   "color": "#F59E0B",
+   "sections": [
+    {
+     "id": "pc-os",
+     "title": "Комп’ютер і операційна система",
+     "desc": "Будова комп’ютера, робочий стіл, вікна, файли й папки.",
+     "art": "os",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "networks-internet",
+     "title": "Комп’ютерні мережі. Інтернет",
+     "desc": "Що таке мережа, браузер, пошук і безпечна поведінка онлайн.",
+     "art": "net",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "presentations",
+     "title": "Комп’ютерні презентації",
+     "desc": "Слайди, макети, зображення та переходи.",
+     "art": "slides",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "text-docs",
+     "title": "Текстові документи",
+     "desc": "Введення, редагування й форматування тексту.",
+     "art": "text",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "scratch",
+     "title": "Алгоритми та програми (Scratch)",
+     "desc": "Перші алгоритми й програми з блоків.",
+     "art": "algo",
+     "img": "",
+     "topics": []
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "label": "6",
+   "title": "6 клас",
+   "color": "#EF6C4A",
+   "sections": [
+    {
+     "id": "digital-devices",
+     "title": "Цифрові пристрої",
+     "desc": "Пристрої навколо нас: як вони працюють і обмінюються даними.",
+     "art": "devices",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "presentations",
+     "title": "Комп’ютерні презентації",
+     "desc": "Анімація, гіперпосилання, дизайн слайдів.",
+     "art": "slides",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "text-docs",
+     "title": "Текстові документи",
+     "desc": "Таблиці, списки, зображення в документах.",
+     "art": "text",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "graphics",
+     "title": "Комп’ютерна графіка",
+     "desc": "Растрові й векторні зображення, графічні редактори.",
+     "art": "graphics",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "spreadsheets",
+     "title": "Електронні таблиці",
+     "desc": "Клітинки, формули, перші обчислення.",
+     "art": "data",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "scratch",
+     "title": "Алгоритми та програми (Scratch)",
+     "desc": "Розгалуження, цикли та змінні у Scratch.",
+     "art": "algo",
+     "img": "",
+     "topics": []
+    }
+   ]
+  },
+  {
+   "id": "7",
+   "label": "7",
+   "title": "7 клас",
+   "color": "#16A34A",
+   "sections": [
+    {
+     "id": "networks-cloud",
+     "title": "Мережі і хмарні сервіси",
+     "desc": "Спільна робота з документами в хмарі.",
+     "art": "cloud",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "python",
+     "title": "Алгоритми та програми (Python)",
+     "desc": "Змінні, введення-виведення, розгалуження.",
+     "art": "python",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "multimedia",
+     "title": "Мультимедіа",
+     "desc": "Звук, відео та їх обробка.",
+     "art": "media",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "animation",
+     "title": "Комп’ютерна анімація",
+     "desc": "Кадри, рух, таймлайн.",
+     "art": "anim",
+     "img": "",
+     "topics": []
+    }
+   ]
+  },
+  {
+   "id": "8",
+   "label": "8",
+   "title": "8 клас",
+   "color": "#0EA5E9",
+   "sections": [
+    {
+     "id": "info-systems",
+     "title": "Інформаційні системи та процеси",
+     "desc": "Інформаційні процеси та системи навколо нас.",
+     "art": "infosys",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "hardware",
+     "title": "Апаратне забезпечення ПК",
+     "desc": "Процесор, пам’ять, материнська плата, периферія.",
+     "art": "hw",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "python",
+     "title": "Алгоритми та програми (Python)",
+     "desc": "Цикли, рядки, вкладені конструкції.",
+     "art": "python",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "web-resources",
+     "title": "Веб-ресурси",
+     "desc": "Як влаштовані сайти, створення веб-сторінок.",
+     "art": "web",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "spreadsheets",
+     "title": "Електронні таблиці",
+     "desc": "Функції, діаграми, сортування й фільтри.",
+     "art": "data",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "smart-tech",
+     "title": "Смарт технології",
+     "desc": "Розумний дім, інтернет речей, датчики.",
+     "art": "smart",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "ai",
+     "title": "Штучний інтелект",
+     "desc": "Що вміє ШІ, як ним користуватися відповідально.",
+     "art": "ai",
+     "img": "",
+     "topics": []
+    }
+   ]
+  },
+  {
+   "id": "9",
+   "label": "9",
+   "title": "9 клас",
+   "color": "#2563EB",
+   "sections": [
+    {
+     "id": "software-security",
+     "title": "ПЗ та інформаційна безпека",
+     "desc": "Види програмного забезпечення, захист даних.",
+     "art": "security",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "3d-graphics",
+     "title": "3D-графіка",
+     "desc": "Тривимірні об’єкти, моделювання, рендер.",
+     "art": "3d",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "spreadsheets",
+     "title": "Електронні таблиці",
+     "desc": "Складні формули, аналіз і візуалізація даних.",
+     "art": "data",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "databases",
+     "title": "БД та СУБД",
+     "desc": "Таблиці, ключі, зв’язки, запити.",
+     "art": "db",
+     "img": "",
+     "topics": [
+      {
+       "title": "Моделювання БД «Зоопарк»",
+       "desc": "Проєктуємо таблиці та зв’язки між ними.",
+       "materials": [
+        {
+         "type": "trainer",
+         "title": "",
+         "file": "https://mihaluchv.github.io/modeling-db-zoo/",
+         "open": true,
+         "new": false
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "python",
+     "title": "Алгоритми та програми (Python)",
+     "desc": "Списки, функції, обробка даних.",
+     "art": "python",
+     "img": "",
+     "topics": []
+    }
+   ]
+  },
+  {
+   "id": "10-11",
+   "label": "10–11",
+   "title": "10–11 клас",
+   "color": "#C026D3",
+   "sections": [
+    {
+     "id": "data-analysis",
+     "title": "Моделювання, аналіз і візуалізація даних",
+     "desc": "Моделі, обробка даних, діаграми й дашборди.",
+     "art": "analytics",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "graphics",
+     "title": "Комп’ютерна графіка",
+     "desc": "Колір, композиція, графічний дизайн.",
+     "art": "graphics",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "web-design",
+     "title": "Веб-дизайн",
+     "desc": "HTML, CSS, структура та оформлення сторінок.",
+     "art": "web",
+     "img": "",
+     "topics": [
+      {
+       "title": "Як браузер бачить сторінку",
+       "desc": "Інтерактивна структура веб-сторінки.",
+       "materials": [
+        {
+         "type": "trainer",
+         "title": "",
+         "file": "https://mihaluchv.github.io/intrviy-brauzer-stryctura-web-page/",
+         "open": true,
+         "new": false
+        }
+       ]
+      },
+      {
+       "title": "Текстові теги HTML",
+       "desc": "",
+       "materials": [
+        {
+         "type": "trainer",
+         "title": "",
+         "file": "https://mihaluchv.github.io/text-tags-web-page/",
+         "open": true,
+         "new": false
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3d-modeling",
+     "title": "3D-моделювання",
+     "desc": "Моделювання тривимірних об’єктів.",
+     "art": "3d",
+     "img": "",
+     "topics": []
+    },
+    {
+     "id": "dbms",
+     "title": "СУБД",
+     "desc": "Бази даних, SQL-запити.",
+     "art": "db",
+     "img": "",
+     "topics": []
+    }
+   ]
+  }
+ ]
+}

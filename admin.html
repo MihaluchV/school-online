@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Кабінет учителя · Інформатика 5–11</title>
+<meta name="theme-color" content="#0F172A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@600&display=swap">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin.css">
+<script src="art.js" defer></script>
+<script src="admin.js" defer></script>
+</head>
+<body>
+<header class="top"><div class="bar">
+ <a class="logo" href="./" title="Відкрити сайт"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0EA5E9"/><path d="M11 14l-5 6 5 6M29 14l5 6-5 6" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="17" y="12" width="6" height="16" rx="2" fill="#F59E0B"/></svg>Кабінет учителя</a>
+ <span class="st" id="st">Не підключено</span>
+ <div class="acts">
+  <button class="btn ghost" id="dlBtn" type="button">Завантажити catalog.json</button>
+  <button class="btn pri" id="saveBtn" type="button" disabled>Зберегти на GitHub</button>
+ </div>
+</div></header>
+
+<main class="adm">
+ <section class="panel" id="conn"></section>
+ <nav class="tabs" role="tablist">
+  <button type="button" data-tab="edit" class="on">Розділи, теми, матеріали</button>
+  <button type="button" data-tab="tests">Контрольні роботи</button>
+  <button type="button" data-tab="misc">Класи і платформи</button>
+ </nav>
+ <div id="view"><div class="loading">Підключіться до GitHub або відкрийте catalog.json, щоб почати.</div></div>
+</main>
+
+<div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true"><div id="mbody"></div></div></div>
+<div class="toast" id="toast" role="status"></div>
+<input type="file" id="fileIn" hidden>
+</body>
+</html>
