@@ -7,8 +7,9 @@
   const M = $('#modal'), mbody = $('#mbody'), gate = $('#gate'), work = $('#work'), acts = $('#acts');
   const EM = '@klas-kod.app'; // технічний домен старих логінів Клас-коду
   const SOFT = ['auth/invalid-credential', 'auth/wrong-password', 'auth/user-not-found', 'auth/invalid-email', 'auth/invalid-login-credentials'];
-  const TYPE_C = { theory: '#0284C7', slides: '#D97706', video: '#DB2777', trainer: '#0D9488', practical: '#4F46E5', test: '#E11D48' };
-  const DEF_TYPES = { theory: 'Теорія', slides: 'Презентація', video: 'Відеоурок', trainer: 'Тренажер', practical: 'Практична', test: 'Контрольна' };
+  const TYPE_C = { theory: '#0284C7', slides: '#D97706', video: '#DB2777', trainer: '#0D9488', practical: '#4F46E5', quiz: '#65A30D', test: '#E11D48' };
+  const LOCKABLE = ['test', 'quiz']; // типи з перемикачем «відкрито / закрито»
+  const DEF_TYPES = { theory: 'Теорія', slides: 'Презентація', video: 'Відеоурок', trainer: 'Тренажер', practical: 'Практична', quiz: 'Тест', test: 'Контрольна' };
 
   const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
   const keep = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } };
@@ -379,7 +380,7 @@
       <input class="i" data-k="m.title" ${a} value="${esc(m.title)}" placeholder="Напис на кнопці (необов’язково)">
       <input class="i file" data-k="m.file" ${a} value="${esc(m.file)}" placeholder="Шлях у репозиторії або https://…">
       <div class="mb">
-        ${m.type === 'test' ? `<label class="tog ${m.open ? 'open' : 'shut'}"><input type="checkbox" data-k="m.open" ${a} ${m.open ? 'checked' : ''}>${m.open ? 'Відкрито' : 'Закрито'}</label>` : ''}
+        ${LOCKABLE.includes(m.type) ? `<label class="tog ${m.open ? 'open' : 'shut'}"><input type="checkbox" data-k="m.open" ${a} ${m.open ? 'checked' : ''}>${m.open ? 'Відкрито' : 'Закрито'}</label>` : ''}
         <label class="tog" title="Показати на головній у «Нових матеріалах»"><input type="checkbox" data-k="m.new" ${a} ${m.new ? 'checked' : ''}>NEW</label>
         <button type="button" class="btn sm" data-act="upM" ${a} title="Вибрати файл на комп’ютері й завантажити в репозиторій">Завантажити файл</button>
         ${m.file ? `<a class="btn sm" href="${esc(m.file)}" target="_blank" rel="noopener">Відкрити ↗</a>` : ''}
@@ -393,15 +394,15 @@
     const groups = cat.classes.map((C, ci) => {
       const rows = [];
       C.sections.forEach((S, si) => S.topics.forEach((T, ti) => T.materials.forEach((m, mi) => {
-        if (m.type === 'test') rows.push(`<div class="tr"><div><b>${esc(m.title || T.title)}</b><small>${esc(S.title)}${m.file ? '' : ' · файл ще не додано'}</small></div>
+        if (LOCKABLE.includes(m.type)) rows.push(`<div class="tr" style="border-left:4px solid ${TYPE_C[m.type]}"><div><b>${esc(m.title || T.title)}</b><small>${esc(cat.types[m.type] || m.type)} · ${esc(S.title)}${m.file ? '' : ' · файл ще не додано'}</small></div>
           <button type="button" class="sw ${m.open ? 'on' : ''}" data-act="tog" data-p="${ci}.${si}.${ti}.${mi}" role="switch" aria-checked="${m.open}" aria-label="${m.open ? 'Відкрито' : 'Закрито'}"></button></div>`);
       })));
       return rows.length ? `<div class="panel" style="--c:${C.color}"><div class="row" style="margin:0;justify-content:space-between"><h2>${esc(C.title)}</h2>
         <div class="row" style="margin:0"><button type="button" class="btn sm" data-act="allT" data-ci="${ci}" data-v="1">Відкрити всі</button><button type="button" class="btn sm" data-act="allT" data-ci="${ci}" data-v="0">Закрити всі</button></div></div><div class="tl">${rows.join('')}</div></div>` : '';
     }).join('');
-    view.innerHTML = `<div class="panel"><h2>Контрольні роботи</h2><p class="hint">Закриту контрольну учні бачать з позначкою «закрито» і не можуть її відкрити. Зелений перемикач — контрольна відкрита.</p>
+    view.innerHTML = `<div class="panel"><h2>Контрольні роботи й тести</h2><p class="hint">Закриту контрольну чи тест учні бачать з позначкою «закрито» і не можуть відкрити. Зелений перемикач означає «відкрито». Нові контрольні й тести спочатку закриті.</p>
       ${connected ? `<div class="row"><label class="chk"><input type="checkbox" id="autoSave" ${autoSave ? 'checked' : ''}>Одразу зберігати на GitHub після перемикання</label></div>` : ''}</div>
-      ${groups || '<div class="empty">Ще немає жодної контрольної. Додайте до теми матеріал типу «Контрольна».</div>'}`;
+      ${groups || '<div class="empty">Ще немає жодної контрольної чи тесту. Додайте до теми матеріал типу «Контрольна» або «Тест».</div>'}`;
   }
 
   function renderMisc() {
@@ -445,7 +446,7 @@
     else if (o === 's' && f === 'img') obj.img = isUrl(el.value.trim()) ? el.value.trim() : cleanPath(el.value);
     else obj[f] = el.value;
     if (o === 's' && f === 'title' && !obj.id) obj.id = uniqueId(cls(), slug(obj.title), obj);
-    if (o === 'm' && f === 'type' && obj.type === 'test') obj.open = false;
+    if (o === 'm' && f === 'type' && LOCKABLE.includes(obj.type)) obj.open = false;
     setDirty();
     if (el.type === 'checkbox' || el.tagName === 'SELECT' || f === 'id' || f === 'img' || f === 'file' || (o === 's' && f === 'title')) render();
   });
@@ -511,7 +512,7 @@
       case 'upM': return uploadMat(+d.ti, +d.mi);
       case 'tog': case 'allT': {
         if (a === 'tog') { const [ci, si, ti, mi] = d.p.split('.').map(Number); const m = cat.classes[ci].sections[si].topics[ti].materials[mi]; m.open = !m.open; }
-        else cat.classes[+d.ci].sections.forEach(x => x.topics.forEach(t => t.materials.forEach(m => { if (m.type === 'test') m.open = d.v === '1'; })));
+        else cat.classes[+d.ci].sections.forEach(x => x.topics.forEach(t => t.materials.forEach(m => { if (LOCKABLE.includes(m.type)) m.open = d.v === '1'; })));
         setDirty(); render();
         if (connected && autoSave) saveGH(true);
         return;

@@ -8,10 +8,11 @@
     video: { c: '#DB2777', i: '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9l5 3-5 3z" fill="currentColor"/>' },
     trainer: { c: '#0D9488', i: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor"/>' },
     practical: { c: '#4F46E5', i: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M9 9l-2 2 2 2M15 9l2 2-2 2M8 21h8"/>' },
+    quiz: { c: '#65A30D', i: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 0c0 1.6-2.5 2-2.5 3.6M12 17h.01"/>' },
     test: { c: '#E11D48', i: '<path d="M9 4h6v3H9zM7 5H5v16h14V5h-2M8 12l2 2 4-4M8 17h8"/>' }
   };
   // Типи матеріалів за замовчуванням (catalog.json може перейменувати їх, а нові типи додаються автоматично)
-  const DEF_TYPES = { theory: 'Теорія', slides: 'Презентація', video: 'Відеоурок', trainer: 'Тренажер', practical: 'Практична', test: 'Контрольна' };
+  const DEF_TYPES = { theory: 'Теорія', slides: 'Презентація', video: 'Відеоурок', trainer: 'Тренажер', practical: 'Практична', quiz: 'Тест', test: 'Контрольна' };
   // Підказки, що з’являються при наведенні на кнопки та позначки типів
   const TIPS = {
     theory: 'Теорія — пояснення теми з прикладами',
@@ -19,6 +20,7 @@
     video: 'Відеоурок — відеопояснення теми',
     trainer: 'Тренажер — інтерактивні вправи для відпрацювання вмінь',
     practical: 'Практична — завдання для самостійного виконання на комп’ютері',
+    quiz: 'Тест — запитання з варіантами відповідей для перевірки знань',
     test: 'Контрольна — перевірка знань з оцінюванням'
   };
   const tip = k => esc(TIPS[k] || TYPES[k] || k);
@@ -35,7 +37,10 @@
     get() { try { return localStorage.getItem('hubClass'); } catch (e) { return null; } },
     set(v) { try { localStorage.setItem('hubClass', v); } catch (e) { } }
   };
-  const visible = m => m.file && (m.type !== 'test' || m.open);
+  const LOCKABLE = ['test', 'quiz']; // типи, які вчитель відкриває й закриває
+  const locked = m => LOCKABLE.includes(m.type) && !m.open;
+  const lockTip = t => t === 'quiz' ? 'Тест закритий — його відкриє вчитель' : 'Контрольна закрита — її відкриє вчитель';
+  const visible = m => m.file && !locked(m);
 
   function counts(S) {
     const o = {};
@@ -46,8 +51,8 @@
 
   function matBtn(m) {
     const label = esc(m.title || tn(m.type));
-    if (m.type === 'test' && !m.open)
-      return `<span class="rb lock" style="--t:${tc('test')}" tabindex="0" data-tip="Контрольна закрита — її відкриє вчитель">${LOCK}${label} · закрито</span>`;
+    if (locked(m))
+      return `<span class="rb lock" style="--t:${tc(m.type)}" tabindex="0" data-tip="${lockTip(m.type)}">${LOCK}${label} · закрито</span>`;
     return `<a class="rb" style="--t:${tc(m.type)}" href="${esc(m.file)}" target="_blank" rel="noopener" data-tip="${tip(m.type)}">${ico(m.type)}${label}${m.new ? ' <span class="new">NEW</span>' : ''}</a>`;
   }
   function row(x) {
@@ -104,7 +109,7 @@
     const w = s.toLowerCase();
     const r = ALL.filter(x => x.m.file && (x.m.title + ' ' + x.T.title + ' ' + x.S.title + ' ' + tn(x.m.type) + ' ' + x.C.title).toLowerCase().includes(w));
     return `<section class="band"><div class="wrap"><h2>Пошук: «${esc(s)}»</h2><p class="sub">Знайдено: ${r.length}</p>
-      <div class="rl">${r.map(x => visible(x.m) ? row(x) : `<div class="ri" style="--t:${tc('test')};--c:${x.C.color}"><span class="ic">${LOCK}</span><span><b>${esc(x.m.title || x.T.title)}</b><small>Контрольна закрита · ${esc(x.S.title)}</small></span><span class="gr">${esc(x.C.label)} кл.</span></div>`).join('') || '<div class="empty">Нічого не знайдено. Спробуйте інше слово.</div>'}</div></div></section>`;
+      <div class="rl">${r.map(x => visible(x.m) ? row(x) : `<div class="ri" style="--t:${tc(x.m.type)};--c:${x.C.color}"><span class="ic" data-tip="${lockTip(x.m.type)}">${LOCK}</span><span><b>${esc(x.m.title || x.T.title)}</b><small>${esc(tn(x.m.type))} · закрито · ${esc(x.S.title)}</small></span><span class="gr">${esc(x.C.label)} кл.</span></div>`).join('') || '<div class="empty">Нічого не знайдено. Спробуйте інше слово.</div>'}</div></div></section>`;
   }
 
   function render() {
