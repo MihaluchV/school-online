@@ -531,6 +531,13 @@
   document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); if (connected) saveGH(false); else if (cat) download(); } });
 
   $('#outBtn').addEventListener('click', signOutAll);
+  // Логотип «Кабінет учителя» → головна кабінету (без перезавантаження, тож незбережені зміни не губляться)
+  $('#homeLink').addEventListener('click', e => {
+    e.preventDefault();
+    if (!user || !cat) { if (!user) location.href = 'admin.html'; return; }
+    tab = 'edit'; curC = cat.classes[0].id; curS = cls().sections[0] || null;
+    render(); scrollTo({ top: 0, behavior: 'smooth' });
+  });
   gate.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'gPw') gLogin(); });
   fbInit();
 })();
