@@ -1,0 +1,256 @@
+{
+  "rules": {
+    "teachers": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid && auth.token.firebase.sign_in_provider === 'password'",
+        ".write": "auth != null && auth.uid === $uid && auth.token.firebase.sign_in_provider === 'password'"
+      }
+    },
+    "logins": {
+      "$l": {
+        ".read": true,
+        ".write": "auth != null && auth.token.firebase.sign_in_provider === 'password' && (!data.exists() || data.child('o').val() === auth.uid)"
+      }
+    },
+    "classes": {
+      "$uid": {
+        ".read": true,
+        ".write": "auth != null && auth.uid === $uid && auth.token.firebase.sign_in_provider === 'password'"
+      }
+    },
+    "tasks": {
+      "$uid": {
+        ".read": true,
+        ".write": "auth != null && auth.uid === $uid && auth.token.firebase.sign_in_provider === 'password'"
+      }
+    },
+    "timg": {
+      "$uid": {
+        ".read": true,
+        ".write": "auth != null && auth.uid === $uid && auth.token.firebase.sign_in_provider === 'password'"
+      }
+    },
+    "journal": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid && auth.token.firebase.sign_in_provider === 'password'",
+        ".write": "auth != null && auth.uid === $uid && auth.token.firebase.sign_in_provider === 'password'"
+      }
+    },
+    "codes": {
+      "$c": {
+        ".read": true,
+        ".write": "auth != null && auth.token.firebase.sign_in_provider === 'password' && (!data.exists() || data.child('o').val() === auth.uid)"
+      }
+    },
+    "owners": {
+      "$t": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.token.firebase.sign_in_provider === 'password' && ((!data.exists() && newData.val() === auth.uid) || (data.val() === auth.uid && !newData.exists()))"
+      }
+    },
+    "works": {
+      "$t": {
+        ".read": "auth != null && root.child('owners').child($t).val() === auth.uid",
+        ".write": "auth != null && root.child('owners').child($t).val() === auth.uid",
+        "$s": {
+          ".read": "auth != null && (!data.exists() || data.child('u').val() === auth.uid || data.child('on').val() !== true)",
+          "u": {
+            ".write": "auth != null && newData.val() === auth.uid && (!data.exists() || data.val() === auth.uid || data.parent().child('on').val() !== true)"
+          },
+          "n": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid"
+          },
+          "fn": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid"
+          },
+          "ln": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid"
+          },
+          "cls": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid"
+          },
+          "cn": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid"
+          },
+          "upd": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid"
+          },
+          "on": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid"
+          },
+          "help": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid"
+          },
+          "sRead": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid"
+          },
+          "ini": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid"
+          },
+          "sub": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid"
+          },
+          "auto": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid"
+          },
+          "files": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid"
+          },
+          "st": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid && data.val() !== 'checked'",
+            ".validate": "newData.val() === 'work' || newData.val() === 'submitted' || root.child('owners').child($t).val() === auth.uid"
+          },
+          "chat": {
+            "$m": {
+              ".write": "auth != null && !data.exists() && newData.child('f').val() === 's' && data.parent().parent().child('u').val() === auth.uid",
+              ".validate": "newData.hasChildren(['f','m','at'])",
+              "m": {
+                ".validate": "newData.isString() && newData.val().length <= 1000"
+              }
+            }
+          },
+          "aw": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid && (!data.exists() || newData.val() >= data.val())",
+            ".validate": "newData.isNumber()"
+          },
+          "am": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid && (!data.exists() || newData.val() >= data.val())",
+            ".validate": "newData.isNumber()"
+          },
+          "lk": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid && newData.val() === true"
+          },
+          "out": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid",
+            ".validate": "newData.isString() && newData.val().length <= 4000"
+          },
+          "pc": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid && (!data.exists() || newData.val() >= data.val())",
+            ".validate": "newData.isNumber()"
+          },
+          "pz": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid && (!data.exists() || newData.val() >= data.val())",
+            ".validate": "newData.isNumber()"
+          },
+          "pl": {
+            "$k": {
+              ".write": "auth != null && !data.exists() && data.parent().parent().child('u').val() === auth.uid",
+              ".validate": "newData.hasChildren(['at','n','x']) && newData.child('x').isString() && newData.child('x').val().length <= 1500 && newData.child('n').isNumber()"
+            }
+          },
+          "ts": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid",
+            ".validate": "newData.hasChildren(['p','n']) && newData.child('p').isNumber() && newData.child('n').isNumber()"
+          },
+          "ws": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid",
+            ".validate": "newData.hasChildren(['p','n']) && newData.child('p').isNumber() && newData.child('n').isNumber()"
+          },
+          "hs": {
+            "$h": {
+              ".write": "auth != null && !data.exists() && data.parent().parent().child('u').val() === auth.uid",
+              ".validate": "newData.isNumber()"
+            }
+          },
+          "vr": {
+            ".write": "auth != null && data.parent().child('u').val() === auth.uid",
+            ".validate": "newData.isString() && newData.val().length <= 40"
+          }
+        }
+      }
+    },
+    "code": {
+      "$t": {
+        ".read": "auth != null && root.child('owners').child($t).val() === auth.uid",
+        ".write": "auth != null && root.child('owners').child($t).val() === auth.uid",
+        "$s": {
+          ".read": "auth != null && root.child('works').child($t).child($s).child('u').val() === auth.uid",
+          ".write": "auth != null && root.child('works').child($t).child($s).child('u').val() === auth.uid"
+        }
+      }
+    },
+    "hist": {
+      "$t": {
+        ".read": "auth != null && root.child('owners').child($t).val() === auth.uid",
+        ".write": "auth != null && root.child('owners').child($t).val() === auth.uid",
+        "$s": {
+          "$k": {
+            ".write": "auth != null && !data.exists() && root.child('works').child($t).child($s).child('u').val() === auth.uid",
+            ".validate": "newData.hasChild('at') && newData.child('at').isNumber()"
+          }
+        }
+      }
+    },
+    "collab": {
+      "owners": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && auth.uid === $uid && auth.token.firebase.sign_in_provider === 'password'"
+        }
+      },
+      "rooms": {
+        "$r": {
+          ".read": "auth != null",
+          ".write": "auth != null && auth.token.firebase.sign_in_provider === 'password' && (!data.exists() || data.child('owner').val() === auth.uid) && (!newData.exists() || newData.child('owner').val() === auth.uid)",
+          "students": {
+            "$u": {
+              ".write": "auth != null && auth.uid === $u",
+              ".validate": "newData.hasChildren(['ln','fn'])",
+              "ln": {
+                ".validate": "newData.isString() && newData.val().length <= 40"
+              },
+              "fn": {
+                ".validate": "newData.isString() && newData.val().length <= 40"
+              },
+              "on": {
+                ".validate": "newData.isBoolean()"
+              },
+              "at": {
+                ".validate": "newData.isNumber()"
+              },
+              "$other": {
+                ".validate": false
+              }
+            }
+          },
+          "cur": {
+            "$u": {
+              ".write": "auth != null && auth.uid === $u && (!newData.exists() || root.child('collab/rooms/'+$r+'/owner').val() === auth.uid || (root.child('collab/rooms/'+$r+'/perm/u/'+auth.uid).val() === true || (root.child('collab/rooms/'+$r+'/perm/all').val() === true && root.child('collab/rooms/'+$r+'/perm/u/'+auth.uid).val() !== false)))"
+            }
+          },
+          "log": {
+            "$s": {
+              "$k": {
+                ".write": "auth != null && !data.exists() && newData.child('u').val() === auth.uid && ($s === root.child('collab/rooms/'+$r+'/active/sid').val() || $s === root.child('collab/rooms/'+$r+'/active/groups/s/'+root.child('collab/rooms/'+$r+'/ga/'+auth.uid).val()+'/sid').val()) && (root.child('collab/rooms/'+$r+'/perm/u/'+auth.uid).val() === true || (root.child('collab/rooms/'+$r+'/perm/all').val() === true && root.child('collab/rooms/'+$r+'/perm/u/'+auth.uid).val() !== false))",
+                ".validate": "newData.hasChildren(['u','t0','e']) && newData.child('e').isString() && newData.child('e').val().length <= 200000"
+              }
+            }
+          },
+          "hands": {
+            "$u": {
+              ".write": "auth != null && auth.uid === $u",
+              ".validate": "newData.isNumber()"
+            }
+          },
+          "ga": {
+            "$u": {
+              ".validate": "newData.isString() && newData.val().matches(/^g[1-6]$/)"
+            }
+          }
+        }
+      }
+    },
+    "hub": {
+      "owner": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.token.firebase.sign_in_provider === 'password' && !data.exists() && newData.val() === auth.uid"
+      },
+      "gh": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid && root.child('hub').child('owner').val() === auth.uid",
+          ".write": "auth != null && auth.uid === $uid && auth.token.firebase.sign_in_provider === 'password' && root.child('hub').child('owner').val() === auth.uid"
+        }
+      }
+    }
+  }
+}

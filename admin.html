@@ -11,27 +11,40 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@600&display=swap">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="admin.css">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js" defer></script>
+<script src="config.js" defer></script>
 <script src="art.js" defer></script>
 <script src="admin.js" defer></script>
 </head>
 <body>
 <header class="top"><div class="bar">
  <a class="logo" href="./" title="Відкрити сайт"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0EA5E9"/><path d="M11 14l-5 6 5 6M29 14l5 6-5 6" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="17" y="12" width="6" height="16" rx="2" fill="#F59E0B"/></svg>Кабінет учителя</a>
- <span class="st" id="st">Не підключено</span>
- <div class="acts">
+ <span class="st" id="st">Вхід не виконано</span>
+ <nav class="plat" aria-label="Платформи">
+  <a class="btn ghost" href="https://mihaluchv.github.io/online-group/?teacher" target="_blank" rel="noopener" title="Платформа спільної групової роботи">Групова робота ↗</a>
+  <a class="btn ghost" href="https://mihaluchv.github.io/online-education/#teacher" target="_blank" rel="noopener" title="Платформа практичних під контролем учителя">Клас-код ↗</a>
+  <a class="btn ghost" href="./" target="_blank" rel="noopener">Сайт ↗</a>
+ </nav>
+ <div class="acts" id="acts" hidden>
   <button class="btn ghost" id="dlBtn" type="button">Завантажити catalog.json</button>
   <button class="btn pri" id="saveBtn" type="button" disabled>Зберегти на GitHub</button>
+  <button class="btn ghost" id="outBtn" type="button" title="Вийти з облікового запису на всіх платформах">Вийти</button>
  </div>
 </div></header>
 
 <main class="adm">
+ <section class="gate" id="gate"><div class="loading">Завантаження…</div></section>
+ <div id="work" hidden>
  <section class="panel" id="conn"></section>
  <nav class="tabs" role="tablist">
   <button type="button" data-tab="edit" class="on">Розділи, теми, матеріали</button>
   <button type="button" data-tab="tests">Контрольні роботи</button>
   <button type="button" data-tab="misc">Класи і платформи</button>
  </nav>
- <div id="view"><div class="loading">Підключіться до GitHub або відкрийте catalog.json, щоб почати.</div></div>
+ <div id="view"></div>
+ </div>
 </main>
 
 <div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true"><div id="mbody"></div></div></div>

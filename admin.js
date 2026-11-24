@@ -4,15 +4,18 @@
   'use strict';
   const $ = s => document.querySelector(s);
   const view = $('#view'), conn = $('#conn'), st = $('#st'), saveBtn = $('#saveBtn'), dlBtn = $('#dlBtn'), fileIn = $('#fileIn');
-  const M = $('#modal'), mbody = $('#mbody');
+  const M = $('#modal'), mbody = $('#mbody'), gate = $('#gate'), work = $('#work'), acts = $('#acts');
+  const EM = '@klas-kod.app'; // технічний домен старих логінів Клас-коду
+  const SOFT = ['auth/invalid-credential', 'auth/wrong-password', 'auth/user-not-found', 'auth/invalid-email', 'auth/invalid-login-credentials'];
   const TYPE_C = { theory: '#0284C7', slides: '#D97706', video: '#DB2777', trainer: '#0D9488', test: '#E11D48' };
 
   const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
   const keep = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 
-  let cfg = Object.assign({ owner: 'MihaluchV', repo: 'school-online', branch: 'main' }, load('hubCfg') || {});
-  cfg.token = load('hubTok') || '';
+  let cfg = { owner: 'MihaluchV', repo: 'school-online', branch: 'main', token: '' };
+  const oldTok = load('hubTok'); // токен зі старої версії кабінету (зберігався в браузері)
+  let AU = null, DB = null, user = null, prof = {};
   let cat = null, connected = false, dirty = false, busy = false, tab = 'edit', curC = null, curS = null;
   let autoSave = load('hubAuto') !== false;
 
@@ -23,7 +26,7 @@
     clearTimeout(tt); tt = setTimeout(() => e.classList.remove('show'), isErr ? 6000 : 3500);
   }
   function status() {
-    st.textContent = busy ? 'Зачекайте…' : !cat ? 'Не підключено' : dirty ? 'Є незбережені зміни' : connected ? 'Збережено на GitHub' : 'Без GitHub';
+    st.textContent = busy ? 'Зачекайте…' : !user ? 'Вхід не виконано' : !cat ? 'Не підключено' : dirty ? 'Є незбережені зміни' : connected ? 'Збережено на GitHub' : 'Без GitHub';
     st.className = 'st ' + (dirty ? 'dirty' : connected && cat ? 'ok' : '');
     saveBtn.disabled = !connected || !cat || busy;
     dlBtn.disabled = !cat;
@@ -119,20 +122,25 @@
     }
     render();
   }
-  async function connect() {
-    cfg.owner = $('#cOwner').value.trim(); cfg.repo = $('#cRepo').value.trim(); cfg.branch = $('#cBranch').value.trim() || 'main';
-    cfg.token = $('#cTok').value.trim();
+  async function connect(fromForm) {
+    let saveAcc = false;
+    if (fromForm) {
+      cfg.owner = $('#cOwner').value.trim(); cfg.repo = $('#cRepo').value.trim(); cfg.branch = $('#cBranch').value.trim() || 'main';
+      cfg.token = $('#cTok').value.trim(); saveAcc = $('#cSave').checked;
+    }
     if (!cfg.token) return toast('Вставте токен доступу GitHub', true);
-    keep('hubCfg', { owner: cfg.owner, repo: cfg.repo, branch: cfg.branch });
-    keep('hubTok', $('#cRem').checked ? cfg.token : null);
     await withBusy(async () => {
       const f = await getFile('catalog.json');
       let data;
       if (f && f.content) data = JSON.parse(b64dec(f.content));
       else if (f && f.download_url) data = await (await fetch(f.download_url, { cache: 'no-store' })).json();
       else data = await siteCatalog();
+      if (saveAcc) {
+        await DB.ref('hub/gh/' + user.uid).set({ owner: cfg.owner, repo: cfg.repo, branch: cfg.branch, token: cfg.token });
+        keep('hubTok', null);
+      }
       await start(data, true);
-      toast('Підключено до ' + esc(cfg.owner + '/' + cfg.repo));
+      toast('Підключено до ' + esc(cfg.owner + '/' + cfg.repo) + (saveAcc ? '. Налаштування збережено у вашому обліковому записі.' : ''));
     });
   }
   function validate() {
@@ -214,27 +222,108 @@
 
   /* ---------- відображення ---------- */
   function renderConn() {
+    const who = esc([prof.last, prof.first, prof.middle].filter(Boolean).join(' ') || prof.login || (user && user.email) || '');
     if (connected) {
-      conn.innerHTML = `<div class="row" style="margin:0;justify-content:space-between"><div><b>Підключено:</b> <code>${esc(cfg.owner)}/${esc(cfg.repo)}</code> · гілка <code>${esc(cfg.branch)}</code></div>
-        <div class="row" style="margin:0"><a class="btn sm" href="./" target="_blank" rel="noopener">Відкрити сайт ↗</a><button type="button" class="btn sm" data-act="logout">Відключитися</button></div></div>`;
+      conn.innerHTML = `<div class="row" style="margin:0;justify-content:space-between"><div><b>${who}</b><div class="who">Сайт: <code>${esc(cfg.owner)}/${esc(cfg.repo)}</code> · гілка <code>${esc(cfg.branch)}</code></div></div>
+        <button type="button" class="btn sm" data-act="ghEdit">Налаштування GitHub</button></div>`;
       return;
     }
-    conn.innerHTML = `<h2>Підключення до GitHub</h2>
-      <p class="hint">Потрібен токен доступу з правом <b>Contents: Read and write</b> лише для репозиторію сайту (як створити — у README.md). Токен зберігається тільки в цьому браузері.</p>
+    conn.innerHTML = `<div class="who" style="margin-bottom:6px">${who}</div><h2>Підключення до репозиторію сайту</h2>
+      <p class="hint">Потрібен токен доступу GitHub з правом <b>Contents: Read and write</b> лише для репозиторію сайту (як створити — у README.md). Його достатньо ввести один раз: він збережеться у вашому обліковому записі, і на інших комп’ютерах кабінет підключиться сам після входу.</p>
       <div class="fields">
         <label class="f">Власник<input class="i" id="cOwner" value="${esc(cfg.owner)}"></label>
         <label class="f">Репозиторій<input class="i" id="cRepo" value="${esc(cfg.repo)}"></label>
         <label class="f">Гілка<input class="i" id="cBranch" value="${esc(cfg.branch)}"></label>
-        <label class="f">Токен доступу<input class="i" id="cTok" type="password" autocomplete="off" value="${esc(cfg.token)}" placeholder="github_pat_…"></label>
+        <label class="f">Токен доступу<input class="i" id="cTok" type="password" autocomplete="off" value="${esc(cfg.token || oldTok || '')}" placeholder="github_pat_…"></label>
       </div>
-      <div class="row"><label class="chk"><input type="checkbox" id="cRem" ${cfg.token ? 'checked' : ''}>Запам’ятати токен на цьому комп’ютері</label></div>
+      <div class="row"><label class="chk"><input type="checkbox" id="cSave" checked>Зберегти в моєму обліковому записі</label></div>
       <div class="row"><button type="button" class="btn pri" data-act="connect">Підключитися</button>
         <button type="button" class="btn" data-act="offline">Працювати без GitHub</button>
         <button type="button" class="btn" data-act="openJson">Відкрити catalog.json з комп’ютера</button></div>`;
   }
 
+  /* ---------- єдиний вхід (Firebase, ті самі облікові записи, що в Клас-коді) ---------- */
+  function gateScreen(kind, extra) {
+    work.hidden = true; acts.hidden = true; gate.hidden = false;
+    const H = {
+      login: `<div class="gbox"><h2>Вхід для вчителя</h2><p>Логін і пароль ті самі, що на платформах «Клас-код» і «Групова робота». Після входу ці платформи відкриватимуться вже без повторного входу.</p>
+        <label class="f">Логін або пошта<input class="i" id="gId" autocomplete="username"></label>
+        <label class="f">Пароль<input class="i" id="gPw" type="password" autocomplete="current-password"></label>
+        <div class="err" id="gErr"></div><button type="button" class="btn pri" data-act="gLogin">Увійти</button>
+        <button type="button" class="link" data-act="gReset">Забули пароль?</button></div>`,
+      claim: `<div class="gbox"><h2>Адміністратор сайту</h2><p>Адміністратора цього сайту ще не призначено. Призначити адміністратором ваш обліковий запис <b>${esc(extra)}</b>? Змінити це потім можна лише в консолі Firebase.</p>
+        <button type="button" class="btn pri" data-act="gClaim">Так, я адміністратор</button><button type="button" class="btn" data-act="gOut">Вийти</button></div>`,
+      denied: `<div class="gbox"><h2>Немає доступу</h2><p>Обліковий запис <b>${esc(extra)}</b> не має права керувати цим сайтом.</p><button type="button" class="btn" data-act="gOut">Вийти</button></div>`,
+      rules: `<div class="gbox"><h2>Потрібно оновити правила Firebase</h2><p>База не дозволяє кабінету сайту прочитати свої налаштування. Опублікуйте в Firebase (Realtime Database → Rules) оновлений файл <code>firebase-rules.json</code>.</p><p>${esc(extra)}</p><button type="button" class="btn" data-act="gOut">Вийти</button></div>`,
+      error: `<div class="gbox"><h2>Помилка</h2><p>${esc(extra)}</p></div>`
+    };
+    gate.innerHTML = H[kind];
+    const f = gate.querySelector('input'); if (f) f.focus();
+    status();
+  }
+  const authMsg = x => x && x.code === 'auth/too-many-requests' ? 'Забагато спроб. Спробуйте за кілька хвилин.' : x && x.code === 'auth/network-request-failed' ? 'Немає зв’язку із сервером.' : 'Неправильний логін або пароль.';
+  async function emailsFor(id) {
+    if (id.includes('@')) return [id];
+    const c = [];
+    try { const m = (await DB.ref('logins/' + id).once('value')).val(); if (m && m.e) c.push(m.e); } catch (e) { }
+    c.push(id + EM);
+    return c;
+  }
+  async function gLogin() {
+    const id = $('#gId').value.trim().toLowerCase(), pw = $('#gPw').value, err = $('#gErr');
+    if (!id || !pw) { err.textContent = 'Введіть логін і пароль.'; return; }
+    err.textContent = ''; busy = true; status();
+    try {
+      let last = null, mail = null;
+      for (const e of await emailsFor(id)) {
+        try { await AU.signInWithEmailAndPassword(e, pw); mail = e; break; } catch (x) { last = x; if (!SOFT.includes(x.code)) throw x; }
+      }
+      if (!mail) throw last;
+      // той самий вхід для «Групової роботи» (вона зберігає сесію окремо)
+      try {
+        const ca = firebase.apps.find(a => a.name === 'collab-teacher') || firebase.initializeApp(CFG, 'collab-teacher');
+        await ca.auth().signInWithEmailAndPassword(mail, pw);
+      } catch (x) { }
+    } catch (x) { err.textContent = authMsg(x); }
+    finally { busy = false; status(); }
+  }
+  async function gReset() {
+    const id = ($('#gId').value || '').trim().toLowerCase(), err = $('#gErr');
+    if (!id) { err.textContent = 'Введіть логін або пошту, а потім натисніть «Забули пароль?».'; return; }
+    try { const e = (await emailsFor(id))[0]; if (!e.endsWith(EM)) await AU.sendPasswordResetEmail(e); } catch (x) { }
+    err.style.color = '#047857'; err.textContent = 'Якщо такий обліковий запис має пошту, на неї надіслано лист для зміни пароля (перевірте «Спам»).';
+  }
+  async function signOutAll() {
+    if (dirty && !(await ask('Вийти без збереження?', 'Є незбережені зміни. Вони залишаться в чернетці цього браузера.', 'Вийти'))) return;
+    dirty = false;
+    try { const ca = firebase.apps.find(a => a.name === 'collab-teacher') || firebase.initializeApp(CFG, 'collab-teacher'); await ca.auth().signOut(); } catch (e) { }
+    await AU.signOut(); location.reload();
+  }
+  async function onAuth(u) {
+    if (!u || u.isAnonymous) { user = null; cat = null; connected = false; return gateScreen('login'); }
+    user = u; gate.innerHTML = '<div class="loading">Перевірка доступу…</div>';
+    try { prof = (await DB.ref('teachers/' + u.uid).once('value')).val() || {}; } catch (e) { prof = {}; }
+    const name = [prof.last, prof.first].filter(Boolean).join(' ') || prof.login || u.email;
+    let owner;
+    try { owner = (await DB.ref('hub/owner').once('value')).val(); }
+    catch (e) { return gateScreen('rules', e.message); }
+    if (!owner) return gateScreen('claim', name);
+    if (owner !== u.uid) return gateScreen('denied', name);
+    gate.hidden = true; work.hidden = false; acts.hidden = false;
+    let g = null;
+    try { g = (await DB.ref('hub/gh/' + u.uid).once('value')).val(); } catch (e) { }
+    if (g && g.token) { Object.assign(cfg, g); await connect(false); if (!connected) render(); }
+    else render();
+  }
+  function fbInit() {
+    if (typeof firebase === 'undefined' || typeof CFG === 'undefined') return gateScreen('error', 'Не вдалося завантажити Firebase. Перевірте з’єднання з Інтернетом і оновіть сторінку.');
+    const app = firebase.apps.find(a => a.name === '[DEFAULT]') || firebase.initializeApp(CFG);
+    AU = app.auth(); AU.languageCode = 'uk'; DB = app.database();
+    AU.onAuthStateChanged(onAuth);
+  }
+
   function render() {
-    status(); renderConn();
+    status(); if (!user) return; renderConn();
     document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
     if (!cat) return;
     if (tab === 'tests') renderTests(); else if (tab === 'misc') renderMisc(); else renderEdit();
@@ -369,18 +458,21 @@
     const a = b.dataset.act, d = b.dataset, C = cat && cls(), S = curS;
     const T = S && d.ti != null ? S.topics[+d.ti] : null;
     switch (a) {
-      case 'connect': return connect();
+      case 'connect': return connect(true);
+      case 'gLogin': return gLogin();
+      case 'gReset': return gReset();
+      case 'gOut': return signOutAll();
+      case 'gClaim': {
+        try { await DB.ref('hub/owner').set(user.uid); } catch (x) { return gateScreen('rules', x.message); }
+        return onAuth(user);
+      }
+      case 'ghEdit': connected = false; return render();
       case 'offline': return withBusy(async () => { await start(await siteCatalog(), false); toast('Режим без GitHub: зміни зберігайте кнопкою «Завантажити catalog.json».'); });
       case 'openJson': {
         const f = await pickFile('.json,application/json'); if (!f) return;
         try { await start(JSON.parse(await f.text()), false); } catch (err) { toast('Це не схоже на файл catalog.json', true); }
         return;
       }
-      case 'logout':
-        if (dirty && !(await ask('Вийти без збереження?', 'Є незбережені зміни. Вони залишаться в чернетці цього браузера.', 'Вийти'))) return;
-        keep('hubTok', null); cfg.token = ''; connected = false; cat = null;
-        view.innerHTML = '<div class="loading">Підключіться до GitHub або відкрийте catalog.json, щоб почати.</div>';
-        return render();
       case 'selC': curC = d.c; curS = cls().sections[0] || null; return render();
       case 'selS': curS = C.sections[+d.i]; render(); return scrollTo({ top: 0, behavior: 'smooth' });
       case 'mvS': swap(C.sections, +d.i, +d.d); break;
@@ -436,6 +528,7 @@
   addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
   document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); if (connected) saveGH(false); else if (cat) download(); } });
 
-  render();
-  if (cfg.token) connect();
+  $('#outBtn').addEventListener('click', signOutAll);
+  gate.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'gPw') gLogin(); });
+  fbInit();
 })();
