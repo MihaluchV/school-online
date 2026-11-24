@@ -7,7 +7,8 @@
   const M = $('#modal'), mbody = $('#mbody'), gate = $('#gate'), work = $('#work'), acts = $('#acts');
   const EM = '@klas-kod.app'; // технічний домен старих логінів Клас-коду
   const SOFT = ['auth/invalid-credential', 'auth/wrong-password', 'auth/user-not-found', 'auth/invalid-email', 'auth/invalid-login-credentials'];
-  const TYPE_C = { theory: '#0284C7', slides: '#D97706', video: '#DB2777', trainer: '#0D9488', test: '#E11D48' };
+  const TYPE_C = { theory: '#0284C7', slides: '#D97706', video: '#DB2777', trainer: '#0D9488', practical: '#4F46E5', test: '#E11D48' };
+  const DEF_TYPES = { theory: 'Теорія', slides: 'Презентація', video: 'Відеоурок', trainer: 'Тренажер', practical: 'Практична', test: 'Контрольна' };
 
   const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
   const keep = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } };
@@ -96,7 +97,7 @@
 
   /* ---------- завантаження й збереження каталогу ---------- */
   function normalize(c) {
-    c.types = c.types || { theory: 'Теорія', slides: 'Презентація', video: 'Відеоурок', trainer: 'Тренажер', test: 'Контрольна' };
+    c.types = Object.assign({}, DEF_TYPES, c.types || {}); // нові типи (напр. «Практична») додаються автоматично
     c.platforms = c.platforms || [];
     c.classes.forEach(C => C.sections.forEach(S => {
       S.topics = S.topics || []; S.img = S.img || '';

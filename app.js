@@ -7,8 +7,21 @@
     slides: { c: '#D97706', i: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/>' },
     video: { c: '#DB2777', i: '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9l5 3-5 3z" fill="currentColor"/>' },
     trainer: { c: '#0D9488', i: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor"/>' },
+    practical: { c: '#4F46E5', i: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M9 9l-2 2 2 2M15 9l2 2-2 2M8 21h8"/>' },
     test: { c: '#E11D48', i: '<path d="M9 4h6v3H9zM7 5H5v16h14V5h-2M8 12l2 2 4-4M8 17h8"/>' }
   };
+  // Типи матеріалів за замовчуванням (catalog.json може перейменувати їх, а нові типи додаються автоматично)
+  const DEF_TYPES = { theory: 'Теорія', slides: 'Презентація', video: 'Відеоурок', trainer: 'Тренажер', practical: 'Практична', test: 'Контрольна' };
+  // Підказки, що з’являються при наведенні на кнопки та позначки типів
+  const TIPS = {
+    theory: 'Теорія — пояснення теми з прикладами',
+    slides: 'Презентація — слайди до уроку',
+    video: 'Відеоурок — відеопояснення теми',
+    trainer: 'Тренажер — інтерактивні вправи для відпрацювання вмінь',
+    practical: 'Практична — завдання для самостійного виконання на комп’ютері',
+    test: 'Контрольна — перевірка знань з оцінюванням'
+  };
+  const tip = k => esc(TIPS[k] || TYPES[k] || k);
   const LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>';
   const app = document.getElementById('app'), nav = document.getElementById('nav'), q = document.getElementById('q');
   let CAT = null, TYPES = {}, ALL = [], filter = 'all';
@@ -29,16 +42,16 @@
     S.topics.forEach(t => t.materials.forEach(m => { if (m.file) o[m.type] = (o[m.type] || 0) + 1; }));
     return o;
   }
-  const chips = o => Object.keys(TYPES).filter(k => o[k]).map(k => `<span class="chip" style="--t:${tc(k)}">${ico(k)}${esc(tn(k))} · ${o[k]}</span>`).join('');
+  const chips = o => Object.keys(TYPES).filter(k => o[k]).map(k => `<span class="chip" style="--t:${tc(k)}" data-tip="${tip(k)}">${ico(k)}${esc(tn(k))} · ${o[k]}</span>`).join('');
 
   function matBtn(m) {
     const label = esc(m.title || tn(m.type));
     if (m.type === 'test' && !m.open)
-      return `<span class="rb lock" style="--t:${tc('test')}" title="Контрольну відкриє вчитель">${LOCK}${label} · закрито</span>`;
-    return `<a class="rb" style="--t:${tc(m.type)}" href="${esc(m.file)}" target="_blank" rel="noopener">${ico(m.type)}${label}${m.new ? ' <span class="new">NEW</span>' : ''}</a>`;
+      return `<span class="rb lock" style="--t:${tc('test')}" tabindex="0" data-tip="Контрольна закрита — її відкриє вчитель">${LOCK}${label} · закрито</span>`;
+    return `<a class="rb" style="--t:${tc(m.type)}" href="${esc(m.file)}" target="_blank" rel="noopener" data-tip="${tip(m.type)}">${ico(m.type)}${label}${m.new ? ' <span class="new">NEW</span>' : ''}</a>`;
   }
   function row(x) {
-    return `<a class="ri" href="${esc(x.m.file)}" target="_blank" rel="noopener" style="--t:${tc(x.m.type)};--c:${x.C.color}"><span class="ic">${ico(x.m.type)}</span><span><b>${esc(x.m.title || x.T.title)}</b><small>${esc(tn(x.m.type))} · ${esc(x.S.title)}</small></span><span class="gr">${esc(x.C.label)} кл.</span></a>`;
+    return `<a class="ri" href="${esc(x.m.file)}" target="_blank" rel="noopener" style="--t:${tc(x.m.type)};--c:${x.C.color}"><span class="ic" data-tip="${tip(x.m.type)}">${ico(x.m.type)}</span><span><b>${esc(x.m.title || x.T.title)}</b><small>${esc(tn(x.m.type))} · ${esc(x.S.title)}</small></span><span class="gr">${esc(x.C.label)} кл.</span></a>`;
   }
 
   /* ---------- сторінки ---------- */
@@ -64,9 +77,9 @@
     const secs = C.sections.filter(S => filter === 'all' || counts(S)[filter]);
     const used = Object.keys(TYPES).filter(k => all[k]);
     return `<section class="chead band" style="--c:${C.color}"><div class="wrap"><div class="crumb"><a href="#">Головна</a> / ${esc(C.title)}</div><h1>${esc(C.title)}</h1>
-      <div class="stats"><div><b>${C.sections.length}</b>розділів</div><div><b>${C.sections.reduce((a, S) => a + S.topics.length, 0)}</b>тем</div><div><b>${all.trainer || 0}</b>тренажерів</div><div><b>${all.test || 0}</b>контрольних</div></div></div></section>
+      <div class="stats"><div><b>${C.sections.length}</b>розділів</div><div><b>${C.sections.reduce((a, S) => a + S.topics.length, 0)}</b>тем</div><div><b>${all.trainer || 0}</b>тренажерів</div><div><b>${all.practical || 0}</b>практичних</div><div><b>${all.test || 0}</b>контрольних</div></div></div></section>
       <section class="band"><div class="wrap">
-      ${used.length ? `<div class="filt" role="group" aria-label="Тип матеріалу">${[['all', 'Усе'], ...used.map(k => [k, tn(k)])].map(([k, n]) => `<button type="button" data-filt="${k}" class="${filter === k ? 'on' : ''}">${esc(n)}</button>`).join('')}</div>` : ''}
+      ${used.length ? `<div class="filt" role="group" aria-label="Тип матеріалу">${[['all', 'Усе'], ...used.map(k => [k, tn(k)])].map(([k, n]) => `<button type="button" data-filt="${k}" class="${filter === k ? 'on' : ''}"${k === 'all' ? '' : ` data-tip="${tip(k)}"`}>${esc(n)}</button>`).join('')}</div>` : ''}
       <div class="grid">${secs.map(S => `<a class="card" href="#s-${C.id}--${S.id}"><div class="art">${cover(S, C)}</div><div class="in"><h3>${esc(S.title)}</h3><p>${esc(S.desc)}</p><div class="chips"><span class="chip" style="--t:#64748B">${S.topics.length} тем</span>${chips(counts(S))}</div></div></a>`).join('') || '<div class="empty">Матеріалів такого типу ще немає.</div>'}</div></div></section>`;
   }
 
@@ -112,12 +125,31 @@
     if (b) { filter = b.dataset.filt; render(); }
   });
   q.addEventListener('input', render);
+
+  /* ---------- спливні підказки ---------- */
+  const tipEl = document.createElement('div');
+  tipEl.className = 'tip'; tipEl.setAttribute('role', 'tooltip'); document.body.appendChild(tipEl);
+  let tipFor = null;
+  function showTip(t) {
+    tipFor = t; tipEl.textContent = t.dataset.tip; tipEl.classList.add('show');
+    const r = t.getBoundingClientRect(), w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+    let x = r.left + r.width / 2 - w / 2, y = r.top - h - 8;
+    x = Math.max(8, Math.min(x, innerWidth - w - 8));
+    if (y < 64) y = r.bottom + 8;
+    tipEl.style.left = x + 'px'; tipEl.style.top = y + 'px';
+  }
+  const hideTip = () => { tipFor = null; tipEl.classList.remove('show'); };
+  document.addEventListener('mousemove', e => { const t = e.target.closest && e.target.closest('[data-tip]'); if (t && t !== tipFor) showTip(t); else if (!t && tipFor) hideTip(); });
+  document.addEventListener('mouseleave', hideTip);
+  document.addEventListener('focusin', e => { const t = e.target.closest('[data-tip]'); t ? showTip(t) : hideTip(); });
+  addEventListener('scroll', hideTip, { passive: true });
+  addEventListener('hashchange', hideTip);
   addEventListener('hashchange', () => { q.value = ''; filter = 'all'; render(); scrollTo(0, 0); });
 
   fetch('catalog.json?t=' + Date.now(), { cache: 'no-store' })
     .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(data => {
-      CAT = data; TYPES = data.types || {};
+      CAT = data; TYPES = Object.assign({}, DEF_TYPES, data.types || {});
       CAT.classes.forEach(C => C.sections.forEach(S => S.topics.forEach(T => T.materials.forEach(m => ALL.push({ C, S, T, m })))));
       render();
     })
