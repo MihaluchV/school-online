@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python: списки — тренажер</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday learning, friendly for 14-year-olds, calm enough for Zoom demo
+   IDEA a row of list cells with indices — every task works on that row
+   PICTURE the working task itself, under a Python-blue band with an indexed list strip
+   COLOUR Python blue #306998 band, Python yellow #ffd43b accent, green/coral for right/wrong
+   TYPE Rubik 700 + Rubik, JetBrains Mono for code
+   LAYOUT band with title + nav of 8 stops; task fills width; phone: stacked, nav scrolls */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0e1620);--ink:light-dark(#13202e,#e6edf5);--mut:light-dark(#566577,#9fb0c2);--pan:light-dark(#f2f6fa,#16222f);--line:light-dark(#d5dee8,#2a3a4c);--blue:#306998;--band:light-dark(#306998,#1a3b5c);--yel:#ffd43b;--ok:light-dark(#1b8a4c,#4cc77f);--okb:light-dark(#e3f6ea,#123323);--bad:light-dark(#c4402b,#ff8a73);--badb:light-dark(#fdeae5,#3a1c17);--code:#14202c;--codeink:#e8eef5}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 Rubik,system-ui,sans-serif;overflow-x:clip}
+code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,Consolas,monospace}
+*,*::before,*::after{font-variant-ligatures:none!important;font-feature-settings:"liga" 0,"calt" 0,"dlig" 0!important}
+button{font:inherit;color:inherit;cursor:pointer}
+header{background:var(--band);color:#fff;padding:20px max(2.5vw,16px) 0}
+.top{display:flex;gap:24px;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto}
+h1{font-size:clamp(26px,4vw,40px);line-height:1.05;letter-spacing:-.02em;margin:0 0 6px;text-wrap:balance}
+.sub{margin:0;color:#d9e6f2}
+.dia{flex:none;width:210px;height:96px}
+@media(max-width:640px){.dia{display:none}}
+nav{display:flex;flex-wrap:wrap;gap:4px;max-width:1400px;margin:18px auto 0}
+nav button{flex:1 1 auto;justify-content:center;display:flex;align-items:center;gap:8px;border:0;background:rgba(255,255,255,.12);color:#fff;padding:10px 11px;white-space:nowrap;font-size:15px;border-radius:10px 10px 0 0;min-height:44px}
+nav button b{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.2);font-size:13px}
+nav button.on{background:var(--bg);color:var(--ink)}
+nav button.on b{background:var(--yel);color:#13202e}
+nav button.done b{background:#4cc77f;color:#0b2216}
+nav button.try b{background:#ffb347;color:#2b1700}
+nav button:focus-visible{outline:3px solid var(--yel);outline-offset:-3px}
+main{max-width:1400px;margin:0 auto;padding:26px max(2.5vw,16px) 40px}
+.task{display:none}.task.on{display:block}
+.meta{color:var(--mut);margin:0 0 4px;font-size:15px}
+h2{font-size:clamp(24px,3vw,32px);line-height:1.1;letter-spacing:-.02em;margin:0 0 8px}
+.ins{margin:0 0 18px;max-width:72ch}
+.panel{background:var(--pan);border:1px solid var(--line);border-radius:14px;padding:16px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 0;align-items:center}
+.btn{min-height:44px;padding:10px 18px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-weight:500}
+.btn.pri{background:var(--yel);border-color:#e6bd1f;color:#13202e}
+.btn.run{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn:hover{filter:brightness(.96)}.btn:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.btn[hidden]{display:none}
+.hint{margin-top:14px;border-left:4px solid var(--yel);background:var(--pan);padding:10px 14px;border-radius:0 10px 10px 0}
+.hint p{margin:4px 0}
+.fb{margin-top:14px;padding:12px 16px;border-radius:12px;border:1px solid}
+.fb.ok{background:var(--okb);border-color:var(--ok)}.fb.bad{background:var(--badb);border-color:var(--bad)}
+.fb h3{margin:0 0 4px;font-size:18px}.fb ul{margin:6px 0 0;padding-left:20px}.fb li{margin:3px 0}
+.navb{display:flex;justify-content:space-between;gap:10px;margin-top:28px;border-top:1px solid var(--line);padding-top:16px}
+code.i{background:var(--pan);border:1px solid var(--line);border-radius:5px;padding:0 5px;font-size:.92em}
+pre.cd{background:var(--code);color:var(--codeink);border-radius:10px;padding:12px 14px;margin:8px 0;overflow-x:auto;font-size:15px;line-height:1.5}
+.k{color:#ffd43b;font-weight:700}.f{color:#7cc4ff}.s{color:#a8e6a1}.n{color:#ffb38a}.c{color:#8394a8;font-style:italic}
+/* task 1 */
+.qs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:14px}
+.q{background:var(--pan);border:2px solid var(--line);border-radius:14px;padding:14px 16px}
+.q.ok{border-color:var(--ok)}.q.bad{border-color:var(--bad)}
+.q p.t{margin:0 0 8px;font-weight:500}
+.opt{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:var(--bg);margin:6px 0;cursor:pointer;min-height:44px}
+.opt input{width:20px;height:20px;accent-color:var(--blue);flex:none}
+.opt.sel{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+.opt.right{border-color:var(--ok);background:var(--okb)}
+.cm{margin:8px 0 0;font-size:15px;padding:8px 10px;border-radius:8px;background:var(--bg)}
+.q.ok .cm{color:var(--ok)}.q.bad .cm{color:var(--bad)}
+/* task 2 */
+.match{position:relative;display:grid;grid-template-columns:minmax(0,.7fr) minmax(40px,.5fr) minmax(0,1.3fr);gap:0}
+.match svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.col{display:flex;flex-direction:column;gap:10px}
+.it{min-height:48px;border:2px solid var(--line);background:var(--bg);border-radius:10px;padding:8px 12px;text-align:left;position:relative}
+.col.l .it{font:700 20px "JetBrains Mono",monospace;text-align:center}
+.it.pick{border-color:var(--yel);box-shadow:0 0 0 3px rgba(255,212,59,.45)}
+.it.lnk{border-color:var(--blue)}
+.it.ok{border-color:var(--ok)}.it.bad{border-color:var(--bad)}
+/* dnd shared */
+.chip{display:inline-flex;align-items:center;justify-content:center;min-height:42px;min-width:54px;padding:6px 12px;border-radius:9px;border:2px solid var(--blue);background:var(--bg);font:700 17px "JetBrains Mono",monospace;cursor:grab;touch-action:none;user-select:none}
+.chip.T{border-color:var(--ok);color:var(--ok)}.chip.F{border-color:var(--bad);color:var(--bad)}
+.chip.sel,.card.sel,.pl.sel{outline:3px solid var(--yel);outline-offset:2px}
+.ghost{position:fixed;z-index:50;pointer-events:none;opacity:.92;box-shadow:0 8px 20px rgba(0,0,0,.25);margin:0}
+.lift{opacity:.35}
+.over{outline:3px dashed var(--blue);outline-offset:2px}
+.pal{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line);margin-bottom:14px}
+.pal span{color:var(--mut);font-size:15px}
+/* task 3 */
+.ex{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px}
+.exi{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--pan);border:2px solid var(--line);border-radius:12px;padding:10px 12px}
+.exi code{font-size:17px;font-weight:700}
+.exi.ok{border-color:var(--ok)}.exi.bad{border-color:var(--bad)}
+.slot{display:inline-flex;align-items:center;justify-content:center;min-width:86px;min-height:44px;border:2px dashed var(--mut);border-radius:9px;font:700 16px "JetBrains Mono",monospace;color:var(--mut);background:var(--bg);cursor:pointer;vertical-align:middle}
+.slot.fill{border-style:solid;border-color:var(--blue);color:var(--ink)}
+.slot.T{border-color:var(--ok);color:var(--ok)}.slot.F{border-color:var(--bad);color:var(--bad)}
+.slot.ok{background:var(--okb);border-color:var(--ok)}.slot.bad{background:var(--badb);border-color:var(--bad)}
+.ctx{margin:16px 0 8px;font-weight:500}
+.ec{grid-column:1/-1;font-size:15px;color:var(--bad);margin:-4px 0 0}
+/* task 4 */
+.pool{display:flex;flex-wrap:wrap;gap:10px;min-height:70px;padding:12px;border:2px dashed var(--line);border-radius:14px;margin-bottom:16px}
+.card{background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:9px 12px;max-width:340px;cursor:grab;touch-action:none;user-select:none;font-size:15px}
+.card.ok{border-color:var(--ok);background:var(--okb)}.card.bad{border-color:var(--bad);background:var(--badb)}
+.bks{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px}
+.bk{background:var(--pan);border:2px solid var(--line);border-radius:14px;padding:12px;min-height:200px}
+.bk h3{margin:0;font-size:18px}.bk pre{margin:6px 0 10px;font-size:13px;padding:8px 10px}
+.bk .cards{display:flex;flex-direction:column;gap:8px}
+.bk .card{max-width:none}
+/* task 5 */
+.pz{display:flex;flex-direction:column;gap:6px;background:var(--code);border-radius:12px;padding:12px;counter-reset:ln}
+.pl{display:flex;align-items:center;gap:8px;background:#1e2d3d;color:var(--codeink);border:2px solid #2c3e52;border-radius:8px;padding:6px 8px;cursor:grab;touch-action:none;user-select:none;font:15px "JetBrains Mono",monospace;white-space:pre;overflow-x:auto}
+.pl::before{counter-increment:ln;content:counter(ln);color:#6f8297;width:1.6em;text-align:right;flex:none}
+.pl .tx{flex:1}
+.pl.ok{border-color:#4cc77f}.pl.bad{border-color:#ff8a73}
+.pl .mv{flex:none;display:flex;gap:4px}
+.pl .mv button{width:34px;height:34px;border:1px solid #3a5068;background:#24384c;color:#fff;border-radius:6px}
+.two{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:820px){.two{grid-template-columns:minmax(0,1fr)}}
+/* task 6 */
+.gap{background:var(--code);color:var(--codeink);border-radius:12px;padding:14px;font:16px/2.3 "JetBrains Mono",monospace;overflow-x:auto;white-space:pre}
+.gap .slot{min-width:64px;min-height:38px;background:#1e2d3d;color:#cfe0f0;border-color:#6f8297}
+.gap .slot.fill{border-color:var(--yel);color:var(--yel)}
+.gap .slot.ok{background:#123323;border-color:#4cc77f;color:#a8e6a1}.gap .slot.bad{background:#3a1c17;border-color:#ff8a73;color:#ffb3a3}
+/* editor + console */
+.ed{display:grid;grid-template-columns:auto minmax(0,1fr);background:var(--code);border-radius:12px;overflow:hidden;border:2px solid #2c3e52}
+.ed:focus-within{border-color:var(--yel)}
+.gut{padding:12px 8px 12px 12px;color:#6f8297;text-align:right;font:15px/1.6 "JetBrains Mono",monospace;user-select:none;background:#101a24}
+.gut span{display:block}
+.ew{display:grid;overflow:hidden}
+.ew>*{grid-area:1/1;margin:0;padding:12px 14px;font:15px/1.6 "JetBrains Mono",monospace;white-space:pre;tab-size:4;border:0;letter-spacing:0}
+.ew pre{color:var(--codeink);pointer-events:none;overflow:hidden}
+.ew textarea{background:transparent;color:transparent;caret-color:#ffd43b;resize:none;outline:none;overflow-x:auto;overflow-y:hidden;width:100%}
+.ew textarea::selection{background:rgba(124,196,255,.35)}
+.con{background:#0b1219;color:#dfe8f1;border-radius:12px;padding:12px 14px;font:15px/1.5 "JetBrains Mono",monospace;min-height:120px;white-space:pre-wrap;overflow-wrap:anywhere;margin-top:10px}
+.con .er{color:#ff8a73}.con .in{color:#ffd43b}.con .sys{color:#7f93a8}
+.con input{background:transparent;border:0;border-bottom:2px solid #ffd43b;color:#ffd43b;font:inherit;font-size:16px;width:12ch;outline:none}
+.tests{margin-top:12px;display:grid;gap:8px}
+.tr{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--pan);font-size:15px}
+.tr b{font-size:18px;line-height:1.2}
+.tr.ok b{color:var(--ok)}.tr.bad b{color:var(--bad)}
+.subt{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.subt button{min-height:44px;padding:8px 16px;border-radius:10px;border:2px solid var(--line);background:var(--bg);font-weight:500}
+.subt button.on{border-color:var(--blue);background:var(--pan)}
+.subt button.done{border-color:var(--ok)}
+.chk{list-style:none;padding:0;margin:8px 0 0}.chk li{padding:3px 0}
+details.memo{margin-top:30px;background:var(--pan);border-radius:12px;padding:10px 16px;border:1px solid var(--line)}
+details.memo summary{cursor:pointer;font-weight:500;min-height:32px}
+.lbl{font-weight:500;margin:14px 0 6px}
+@media(max-width:600px){main{padding-top:18px}.gap{font-size:14px;padding:10px}.gap .slot{min-width:46px}.pl{font-size:13px}.match{grid-template-columns:minmax(0,.55fr) 34px minmax(0,1.45fr)}.col.l .it{font-size:17px}.it{font-size:14px}}
+@media(prefers-reduced-motion:no-preference){.task.on{animation:in .25s ease-out}@keyframes in{from{opacity:0;transform:translateY(6px)}}}
+@media(max-width:760px){nav button:not(.on) .nm{display:none}nav button{padding:10px}}
+@media(max-width:560px){nav button .nm,nav button.on .nm{display:none}nav button{flex:1 1 0;padding:10px 0}}
+/* lists additions */
+nav button{font-size:14px;padding:10px 8px}
+@media(max-width:700px){#t5 .pal{position:static}}
+#t2 .col.l .it{font-size:16px}
+@media(max-width:600px){#t2 .col.l .it{font-size:13px;padding:8px 6px}}
+.lst{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 14px}
+.lst .cell{display:flex;flex-direction:column;align-items:center;gap:4px}
+.lst .v{display:grid;place-items:center;min-width:64px;height:54px;border-radius:10px;background:var(--code);color:#ffb38a;font:700 20px "JetBrains Mono",monospace;border:2px solid #2c3e52}
+.lst .ix{font:700 14px "JetBrains Mono",monospace;color:var(--blue)}
+.lst .nx{font:700 14px "JetBrains Mono",monospace;color:var(--mut)}
+.lst .nm{font:700 20px "JetBrains Mono",monospace;align-self:center;margin-right:6px}
+.ex .slot{min-width:110px;padding:0 8px;font-size:15px}
+.exi code{font-size:18px}
+.ex2{grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr))}.ex2 .exi code{font-size:15px}.ex2 .slot{font-size:13px;max-width:55%;text-align:center}
+.codebox{position:sticky;top:76px}
+@media(max-width:820px){.codebox{position:static}}
+.cl{display:flex;flex-direction:column;gap:12px}
+.cp{background:var(--pan);border:2px solid var(--line);border-radius:14px;padding:12px 14px}
+.cp.ok{border-color:var(--ok)}.cp.bad{border-color:var(--bad)}
+.cp h3{margin:0 0 8px;font-size:17px;font-weight:500}
+.cages{display:flex;flex-wrap:wrap;gap:8px}
+.cg{display:flex;flex-direction:column;align-items:center;gap:3px}
+.cg .slot{position:relative;min-width:84px;min-height:56px;border-radius:8px 8px 4px 4px;border:2px solid var(--mut);border-style:solid;overflow:hidden;font-size:15px}
+.cg .slot::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 14px,color-mix(in srgb,var(--mut) 45%,transparent) 14px 17px);pointer-events:none}
+.cg .slot.fill{border-color:var(--blue);background:var(--bg)}
+.cg span.i{font:700 13px "JetBrains Mono",monospace;color:var(--mut)}
+.xrow{display:flex;align-items:center;gap:10px;margin-top:10px;font:700 18px "JetBrains Mono",monospace}
+.chip.an{font-family:Rubik,sans-serif;font-weight:500;border-color:var(--blue)}
+.inbox{margin-top:10px}
+.inbox textarea{width:100%;min-height:64px;background:var(--pan);color:var(--ink);border:2px solid var(--line);border-radius:10px;padding:8px 12px;font:16px/1.5 "JetBrains Mono",monospace;resize:vertical}
+.inbox textarea:focus{outline:none;border-color:var(--blue)}
+.inbox small{display:block;color:var(--mut);font-size:14px;margin-top:2px}
+.pys{font-size:14px;color:var(--mut);margin:6px 0 0}
+.memo table{border-collapse:collapse;width:100%;font-size:15px;margin:8px 0}
+.memo td,.memo th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.memo th{font-weight:500;color:var(--mut)}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div>
+      <h1>Python. Списки</h1>
+      <p class="sub">Тренажер для 9 класу: повторюємо конспект і готуємося до підсумкової практичної роботи</p>
+    </div>
+    <svg class="dia" viewBox="0 0 210 96" aria-hidden="true">
+      <g font-family="JetBrains Mono,monospace" font-weight="700">
+        <text x="4" y="40" font-size="18" fill="#fff">a =</text>
+        <g transform="translate(44 18)">
+          <rect x="0" y="0" width="30" height="34" rx="5" fill="#14202c" stroke="#5d7a96"/>
+          <rect x="33" y="0" width="30" height="34" rx="5" fill="#14202c" stroke="#5d7a96"/>
+          <rect x="66" y="0" width="30" height="34" rx="5" fill="#ffd43b" stroke="#e6bd1f"/>
+          <rect x="99" y="0" width="30" height="34" rx="5" fill="#14202c" stroke="#5d7a96"/>
+          <rect x="132" y="0" width="30" height="34" rx="5" fill="#14202c" stroke="#5d7a96"/>
+          <g font-size="14" text-anchor="middle">
+            <text x="15" y="22" fill="#ffb38a">15</text><text x="48" y="22" fill="#ffb38a">24</text><text x="81" y="22" fill="#13202e">38</text><text x="114" y="22" fill="#ffb38a">42</text><text x="147" y="22" fill="#ffb38a">50</text>
+          </g>
+          <g font-size="12" text-anchor="middle" fill="#d9e6f2">
+            <text x="15" y="52">0</text><text x="48" y="52">1</text><text x="81" y="52">2</text><text x="114" y="52">3</text><text x="147" y="52">4</text>
+          </g>
+          <g font-size="11" text-anchor="middle" fill="#9fc0dd">
+            <text x="15" y="68">-5</text><text x="48" y="68">-4</text><text x="81" y="68">-3</text><text x="114" y="68">-2</text><text x="147" y="68">-1</text>
+          </g>
+        </g>
+      </g>
+    </svg>
+  </div>
+  <nav id="nav" aria-label="Завдання"></nav>
+</header>
+<main id="main"></main>
+<script type="text/plain" id="pyc">
+import sys, io, json, traceback
+def __run(src, inputs, echo):
+    buf = io.StringIO()
+    q = list(inputs)
+    def _inp(p=''):
+        if not q:
+            raise EOFError('no input')
+        v = q.pop(0)
+        if echo:
+            buf.write(str(p) + v + '\n')
+        return v
+    g = {'__name__': '__main__', 'input': _inp}
+    old = sys.stdout
+    sys.stdout = buf
+    err = None
+    try:
+        exec(compile(src, '<code>', 'exec'), g)
+    except SyntaxError as e:
+        err = [type(e).__name__, str(e.msg), e.lineno]
+    except BaseException as e:
+        ln = None
+        for fr in traceback.extract_tb(e.__traceback__):
+            if fr.filename == '<code>':
+                ln = fr.lineno
+        err = [type(e).__name__, str(e), ln]
+    finally:
+        sys.stdout = old
+    return json.dumps({'out': buf.getvalue(), 'err': err})
+</script>
+<script>
+{
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const PRAISE=["Чудово! Усе правильно.","Так тримати — бездоганно!","Відмінно, ти добре знаєш цю тему!","Супер! Можна переходити далі."];
+const TRY=["Майже вийшло! Прочитай коментарі й виправ позначені місця.","Є кілька неточностей — подивись на позначене і спробуй ще раз.","Не здавайся: помилки — це частина навчання. Виправ і перевір знову."];
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+/* ---------- syntax highlight ---------- */
+const KW=new Set(['if','elif','else','for','in','while','and','or','not','True','False','None','def','return','break','continue','import','from']);
+const BIN=new Set(['print','input','int','float','str','len','min','max','sum','sorted','range','list','round','abs']);
+function hl(src){
+  const re=/(#.*)|(f?(?:"[^"\n]*"?|'[^'\n]*'?))|([\p{L}_][\p{L}\p{N}_]*)|(\d+(?:\.\d+)?)|([\s\S])/gu;
+  let o='',m,prev='';
+  while((m=re.exec(src))){
+    if(m[1])o+=`<span class="c">${esc(m[1])}</span>`;
+    else if(m[2])o+=`<span class="s">${esc(m[2])}</span>`;
+    else if(m[3])o+=KW.has(m[3])?`<span class="k">${m[3]}</span>`:(BIN.has(m[3])||prev==='.')?`<span class="f">${m[3]}</span>`:esc(m[3]);
+    else if(m[4])o+=`<span class="n">${m[4]}</span>`;
+    else o+=esc(m[5]);
+    prev=m[5]||'';
+  }
+  return o;
+}
+
+/* ---------- real Python (Pyodide) ---------- */
+const PYV='https://cdn.jsdelivr.net/pyodide/v0.26.4/full/';
+const PYC=$('#pyc').textContent;
+const PY={st:'idle',w:null,main:null,n:0,cb:new Map(),readyP:null,listeners:new Set(),
+  set(s){this.st=s;this.listeners.forEach(f=>f(s))},
+  start(){
+    if(this.readyP)return this.readyP;
+    this.set('loading');
+    this.readyP=new Promise((res,rej)=>{
+      try{
+        const src=`importScripts('${PYV}pyodide.js');let py;
+onmessage=async e=>{const d=e.data;
+ if(d.init){try{py=await loadPyodide({indexURL:'${PYV}'});py.runPython(d.init);postMessage({ready:1})}catch(err){postMessage({fail:String(err)})}return}
+ const run=py.globals.get('__run');const out=[];
+ for(const inp of d.inputs){out.push(JSON.parse(run(d.code,py.toPy(inp),d.echo)))}
+ run.destroy();postMessage({id:d.id,out})};`;
+        const w=new Worker(URL.createObjectURL(new Blob([src],{type:'text/javascript'})));
+        w.onmessage=e=>{const d=e.data;
+          if(d.ready){this.w=w;this.set('ready');res()}
+          else if(d.fail){w.terminate();this.mainThread().then(res,rej)}
+          else if(this.cb.has(d.id)){this.cb.get(d.id)(d.out);this.cb.delete(d.id)}};
+        w.onerror=e=>{e.preventDefault();if(this.st==='loading'){w.terminate();this.mainThread().then(res,rej)}};
+        w.postMessage({init:PYC});
+      }catch(err){this.mainThread().then(res,rej)}
+    }).catch(e=>{this.set('fail');this.readyP=null;throw e});
+    return this.readyP;
+  },
+  mainThread(){return new Promise((res,rej)=>{
+    const go=async()=>{try{this.main=await loadPyodide({indexURL:PYV});this.main.runPython(PYC);this.set('ready');res()}catch(e){rej(e)}};
+    if(window.loadPyodide)return go();
+    const s=document.createElement('script');s.src=PYV+'pyodide.js';s.onload=go;s.onerror=()=>rej(new Error('net'));document.head.append(s)})},
+  async run(code,inputs,echo){
+    await this.start();
+    if(this.main){const f=this.main.globals.get('__run');const out=inputs.map(inp=>JSON.parse(f(code,this.main.toPy(inp),echo)));f.destroy();return out}
+    const id=++this.n;
+    return new Promise(res=>{
+      const t=setTimeout(()=>{this.cb.delete(id);this.w.terminate();this.w=null;this.readyP=null;this.set('idle');
+        res(inputs.map(()=>({out:'',err:['Timeout','',null]})))},6000);
+      this.cb.set(id,out=>{clearTimeout(t);res(out)});
+      this.w.postMessage({id,code,inputs,echo});
+    });
+  }
+};
+const UA=[
+ [/list index out of range/,()=>'індекс виходить за межі списку. Пам\'ятай: останній елемент має індекс len(список) - 1.'],
+ [/list assignment index out of range/,()=>'такого індексу у списку немає — новий елемент додають через append() або insert().'],
+ [/'list' object has no attribute '(\w+)'/,(m)=>`у списку немає методу «${m[1]}».`+(/^(add|push)$/.test(m[1])?' Щоб додати елемент у кінець, використовуй append().':' Перевір назву методу.')],
+ [/'NoneType' object/,()=>'тут опинилося значення None. Можливо, написано a = a.sort() — метод sort() змінює сам список і повертає None. Пиши просто a.sort().'],
+ [/not supported between instances of '(\w+)' and '(\w+)'/,(m)=>`не можна порівнювати ${m[1]==='str'||m[2]==='str'?'текст і число':m[1]+' і '+m[2]}. Дані з input() — це текст: перетвори їх на числа через int().`],
+ [/can only concatenate str/,()=>'не можна «склеїти» текст із числом. Перетвори число на текст через str() або виводь через кому в print().'],
+ [/can only concatenate list/,()=>'до списку можна додати (+) лише інший список, наприклад a + [5].'],
+ [/unsupported operand type\(s\) for (\S+): '(\w+)' and '(\w+)'/,(m)=>`дія «${m[1]}» неможлива для ${m[2]} і ${m[3]}. Можливо, числа з input() не перетворено через int().`],
+ [/x not in list|is not in list/,()=>'такого значення немає у списку (remove() та index() у цьому разі видають помилку). Перевір наявність через in.'],
+ [/invalid literal for int\(\) with base 10: (.*)/,(m)=>`не вдається перетворити ${m[1]} на ціле число.`],
+ [/name '(\w+)' is not defined/,(m)=>`ім'я «${m[1]}» не визначене. Перевір написання (Python розрізняє великі й малі літери) і чи створено змінну вище.`],
+ [/list indices must be integers/,()=>'індекс списку має бути цілим числом.'],
+ [/'(\w+)' object is not callable/,(m)=>`${m[1]} не можна викликати як функцію — можливо, зайві дужки або квадратні дужки замінено на круглі.`],
+ [/expected ':'/,()=>'пропущено двокрапку «:» в кінці рядка.'],
+ [/expected an indented block/,()=>'після рядка з «:» очікується команда з відступом (Tab або 4 пробіли).'],
+ [/unexpected indent/,()=>'зайвий відступ.'],
+ [/unindent does not match/,()=>'відступи не збігаються — усередині одного блоку відступ має бути однаковим.'],
+ [/was never closed|unmatched/,()=>'дужки не парні — якусь не закрито або є зайва.'],
+ [/unterminated string/,()=>'лапки не закрито.'],
+ [/division by zero/,()=>'ділення на нуль неможливе. Можливо, список порожній?'],
+ [/Maybe you meant '==' or ':='/,()=>'один «=» — це присвоєння. Для порівняння потрібно «==».'],
+ [/invalid syntax/,()=>'синтаксична помилка: перевір дужки, коми, двокрапки й лапки.'],
+ [/^no input$/,()=>'програма просить більше даних, ніж записано в полі «Вхідні дані» (один рядок — один виклик input()).']
+];
+function errText(e){const[t,m,l]=e;
+  if(t==='Timeout')return'Програма працює занадто довго й зупинена — можливо, цикл ніколи не закінчується.';
+  let ua='';for(const[r,f]of UA){const x=m.match(r);if(x){ua=f(x);break}}
+  return`${l?`Рядок ${l}: `:''}${t} — ${ua||esc(m)}${ua?`\n(англійською: ${m})`:''}`;
+}
+function pyStatus(el){const f=s=>{el.textContent=s==='loading'?'⏳ Завантажую Python у браузері… Перший раз це займає 5–20 секунд.':s==='fail'?'Не вдалося завантажити Python. Перевір інтернет і натисни «Запустити» ще раз.':''};PY.listeners.add(f);f(PY.st)}
+
+/* ---------- console ---------- */
+function makeConsole(el){
+  el.innerHTML='<span class="sys">Тут з\'явиться результат. Натисни «Запустити».</span>';
+  return async function run(code,lines){
+    el.innerHTML='<span class="sys">Виконую…</span>';
+    try{const[r]=await PY.run(code,[lines],true);el.innerHTML='';
+      const s=document.createElement('span');s.textContent=r.out;el.append(s);
+      if(r.err){const e=document.createElement('span');e.className='er';e.textContent=(r.out?'\n':'')+errText(r.err);el.append(e)}
+      else el.insertAdjacentHTML('beforeend','<span class="sys">\n— програму завершено —</span>');
+    }catch(e){el.innerHTML='<span class="er">Python не завантажився. Перевір підключення до інтернету й спробуй ще раз.</span>'}
+  };
+}
+const norm=s=>s.toLowerCase().replace(/[’ʼ`]/g,"'").replace(/[«»"]/g,'').replace(/[!.,…:;]+/g,' ').replace(/\s+/g,' ').trim();
+async function runTests(code,tests){
+  const rs=await PY.run(code,tests.map(t=>t.inp),false);
+  return rs.map((r,k)=>{const lines=r.out.split('\n').map(s=>s.trim()).filter(Boolean);
+    return{t:tests[k],lines,err:r.err,ok:!r.err&&norm(lines.join('\n'))===norm(tests[k].out.join('\n'))}});
+}
+const inBox=(v)=>`<div class="inbox"><p class="lbl">Вхідні дані</p><textarea spellcheck="false" aria-label="Вхідні дані">${esc(v)}</textarea><small>Кожен рядок — це відповідь на один виклик input().</small></div>`;
+const getLines=host=>$('.inbox textarea',host).value.replace(/\r/g,'').split('\n');
+/* ---------- editor ---------- */
+function makeEditor(host,code){
+  host.innerHTML='<div class="ed"><div class="gut"></div><div class="ew"><pre aria-hidden="true"></pre><textarea spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" aria-label="Редактор коду"></textarea></div></div>';
+  const ta=$('textarea',host),pre=$('pre',host),gut=$('.gut',host);
+  const upd=()=>{const n=ta.value.split('\n').length;pre.innerHTML=hl(ta.value)+'\n';gut.innerHTML=Array.from({length:Math.max(n,6)},(_,i)=>`<span>${i+1}</span>`).join('');ta.rows=Math.max(n,6)};
+  const ins=t=>{if(!document.execCommand('insertText',false,t)){ta.setRangeText(t,ta.selectionStart,ta.selectionEnd,'end');upd()}};
+  ta.addEventListener('input',upd);ta.addEventListener('scroll',()=>{pre.scrollLeft=ta.scrollLeft});
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'&&!e.shiftKey){e.preventDefault();ins('    ')}
+    else if(e.key==='Tab'&&e.shiftKey){e.preventDefault();const s=ta.value.lastIndexOf('\n',ta.selectionStart-1)+1;const sp=ta.value.slice(s).match(/^ {1,4}/);if(sp){ta.setRangeText('',s,s+sp[0].length,'end');upd()}}
+    else if(e.key==='Enter'){e.preventDefault();const s=ta.value.lastIndexOf('\n',ta.selectionStart-1)+1;const line=ta.value.slice(s,ta.selectionStart);let ind=line.match(/^ */)[0];if(/:\s*$/.test(line))ind+='    ';ins('\n'+ind)}
+  });
+  ta.value=code;upd();
+  return{get:()=>ta.value,set:v=>{ta.value=v;upd()}};
+}
+
+/* ---------- drag & drop (mouse, touch, or tap-tap) ---------- */
+function dnd(root,onDrop,onTap){
+  let st=null,sel=null,skip=false;
+  const zoneAt=(x,y)=>{const z=document.elementFromPoint(x,y)?.closest('[data-drop]');return z&&root.contains(z)?z:null};
+  root.addEventListener('pointerdown',e=>{const d=e.target.closest('[data-drag]');if(!d||e.button>0||e.target.closest('button:not([data-drag])'))return;st={d,x:e.clientX,y:e.clientY,g:null,z:null}});
+  window.addEventListener('pointermove',e=>{
+    if(!st)return;
+    if(!st.g){if(Math.hypot(e.clientX-st.x,e.clientY-st.y)<7)return;
+      const r=st.d.getBoundingClientRect();st.g=st.d.cloneNode(true);st.g.classList.add('ghost');st.g.classList.remove('sel');
+      st.g.style.width=r.width+'px';st.ox=st.x-r.left;st.oy=st.y-r.top;document.body.append(st.g);st.d.classList.add('lift');
+      if(sel){sel.classList.remove('sel');sel=null}}
+    st.g.style.left=e.clientX-st.ox+'px';st.g.style.top=e.clientY-st.oy+'px';
+    const z=zoneAt(e.clientX,e.clientY);if(z!==st.z){st.z?.classList.remove('over');z?.classList.add('over');st.z=z}
+  });
+  const end=e=>{if(!st)return;if(st.g){st.g.remove();st.d.classList.remove('lift');st.z?.classList.remove('over');if(st.z&&st.z!==st.d)onDrop(st.d,st.z,e.clientY);skip=true;setTimeout(()=>skip=false,0)}st=null};
+  window.addEventListener('pointerup',end);window.addEventListener('pointercancel',end);
+  root.addEventListener('click',e=>{
+    if(skip)return;if(e.target.closest('button:not([data-drag])'))return;
+    const d=e.target.closest('[data-drag]'),z=e.target.closest('[data-drop]');
+    if(d&&!d.hasAttribute('data-drop')){if(sel===d){d.classList.remove('sel');sel=null}else{sel?.classList.remove('sel');sel=d;d.classList.add('sel')}return}
+    if(sel&&z&&z!==sel){const s=sel;sel.classList.remove('sel');sel=null;onDrop(s,z,null);return}
+    if(d){if(sel===d){d.classList.remove('sel');sel=null}else{sel?.classList.remove('sel');sel=d;d.classList.add('sel')}return}
+    if(z&&onTap)onTap(z);
+  });
+}
+
+/* ---------- task shell ---------- */
+const TASKS=[];const status=[];
+function shell(i,title,kind,ins){
+  const sec=document.createElement('section');sec.className='task';sec.id='t'+(i+1);
+  sec.innerHTML=`<p class="meta">Завдання ${i+1} з ${NAMES.length} · ${kind}</p><h2>${title}</h2><p class="ins">${ins}</p><div class="body"></div>
+  <div class="bar"><button class="btn pri chkb">Перевірити</button><button class="btn hb">Підказка</button><button class="btn rs">Почати знову</button><button class="btn sol" hidden>Показати правильну відповідь</button></div>
+  <div class="hint" hidden></div><div class="fbx"></div>
+  <div class="navb"><button class="btn pv">← Попереднє</button><button class="btn nx">Наступне →</button></div>`;
+  $('#main').append(sec);
+  $('.pv',sec).onclick=()=>go(i-1);$('.nx',sec).onclick=()=>go(i+1);
+  if(i===0)$('.pv',sec).style.visibility='hidden';if(i===NAMES.length-1)$('.nx',sec).style.visibility='hidden';
+  return sec;
+}
+function hints(sec,list){let k=0;const b=$('.hb',sec),box=$('.hint',sec);
+  const lab=()=>b.textContent=k<list.length?`Підказка ${k+1} з ${list.length}`:'Підказки закінчились';lab();
+  b.onclick=()=>{if(k>=list.length)return;box.hidden=false;box.insertAdjacentHTML('beforeend',`<p><b>${k+1}.</b> ${typeof list[k]==='function'?list[k]():list[k]}</p>`);k++;lab()};
+  return()=>{k=0;box.innerHTML='';box.hidden=true;lab()};
+}
+function fb(sec,ok,items=[],head){
+  $('.fbx',sec).innerHTML=`<div class="fb ${ok?'ok':'bad'}" role="status"><h3>${head||(ok?pick(PRAISE):pick(TRY))}</h3>${items.length?'<ul>'+items.map(x=>`<li>${x}</li>`).join('')+'</ul>':''}</div>`;
+  $('.sol',sec).hidden=ok;setStatus(TASKS.indexOf(sec),ok?'done':'try');
+}
+function clearFb(sec){$('.fbx',sec).innerHTML='';$('.sol',sec).hidden=true}
+function setStatus(i,s){if(status[i]==='done'&&s==='try')return;status[i]=s;renderNav()}
+const NAMES=['Тест','Методи','Індекси і зрізи','Що в списку?','Створення','Збери програму','Пропуски','Виправ помилки','Напиши код'];
+let cur=0;
+function renderNav(){$('#nav').innerHTML=NAMES.map((n,i)=>`<button class="${i===cur?'on':''} ${status[i]||''}" data-i="${i}" title="${n}" ${i===cur?'aria-current="step"':''}><b>${status[i]==='done'?'✓':i+1}</b><span class="nm">${n}</span></button>`).join('')}
+$('#nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b)go(+b.dataset.i)});
+function go(i){if(i<0||i>=NAMES.length)return;cur=i;TASKS.forEach((t,k)=>t.classList.toggle('on',k===i));renderNav();
+  try{history.replaceState(null,'','#t'+(i+1))}catch(e){}
+  $('#nav button.on')?.scrollIntoView({block:'nearest',inline:'center'});window.scrollTo({top:0});
+  window.dispatchEvent(new Event('resize'));if(i>=5)PY.start().catch(()=>{})}
+const code=s=>`<pre class="cd">${hl(s)}</pre>`;
+
+
+/* ===== 1. TEST ===== */
+{
+const Q=[
+ {t:'Список (list) у Python — це…',o:[
+  ['впорядкована змінювана колекція елементів у квадратних дужках [ ]','Так! Кожен елемент має свій індекс, а сам список можна змінювати: додавати, видаляти, замінювати елементи.'],
+  ['незмінна послідовність у круглих дужках ( )','Це кортеж (tuple): його після створення змінити не можна.'],
+  ['набір унікальних значень у фігурних дужках { }','Це множина (set): вона сама прибирає повтори й не має індексів.'],
+  ['пари «ключ: значення» у фігурних дужках','Це словник (dict): доступ до значень — за ключем, а не за номером.']],a:[0]},
+ {t:'Яке значення має вираз nums[-2], якщо',c:'nums = [10, 20, 30, 40]',o:[
+  ['30','Вірно: від\'ємні індекси рахують з кінця: -1 — це 40, -2 — це 30.'],['20','20 має індекс 1 або -3. Від\'ємні індекси рахуються з кінця списку.'],['40','40 — останній елемент, його індекс -1.'],['IndexError','Індекс -2 у цьому списку існує (від -4 до -1), тож помилки не буде.']],a:[0]},
+ {t:'У списку 7 елементів. Який індекс має останній із них?',o:[
+  ['6','Так: нумерація з нуля, тож останній індекс — n - 1 = 6 (або -1).'],['7','Індекс 7 вже за межами списку — буде IndexError. Нумерація починається з 0.'],['-7','-7 — це індекс ПЕРШОГО елемента (рахуючи з кінця).'],['0','0 — індекс першого елемента.']],a:[0]},
+ {t:'Що виведе програма?',c:'a = [5, 7, 5, 9]\na.remove(5)\nprint(a)',o:[
+  ['[7, 5, 9]','Вірно: remove(x) видаляє лише ПЕРШЕ входження значення x.'],['[7, 9]','remove() видаляє лише одне — перше — входження, а не всі.'],['[5, 7, 9]','Видаляється перша п\'ятірка, а не друга.'],['[5, 7, 5]','remove(5) шукає значення 5, а не індекс 5.']],a:[0]},
+ {t:'Що виведе програма?',c:'a = [3, 1, 2]\nb = a.sort()\nprint(b)',o:[
+  ['None','Так! Метод sort() змінює сам список a і нічого не повертає (None). Новий відсортований список дає функція sorted(a).'],
+  ['[1, 2, 3]','Відсортованим стане a, а в b потрапить результат методу — None. Для нового списку є sorted(a).'],
+  ['[3, 1, 2]','sort() змінює список, але в b записується не список, а результат методу — None.'],
+  ['Помилку','Помилки немає, але результат несподіваний: sort() повертає None.']],a:[0]},
+ {t:'Що виведе програма?',c:'word = list("кіт")\nword[0] = "р"\nprint(word)',o:[
+  ["['р', 'і', 'т']","Вірно: list() розбиває рядок на символи, а елементи списку можна змінювати."],
+  ['TypeError','Така помилка була б для рядка: word = "кіт"; word[0] = "р". Рядок змінювати не можна, а список — можна.'],
+  ['ріт','Список виводиться у квадратних дужках, з кожним символом окремо.'],
+  ["['р']","Змінено лише нульовий елемент, інші залишилися на місці."]],a:[0]},
+ {t:'Як знайти середнє арифметичне елементів числового списку a?',o:[
+  ['sum(a) / len(a)','Так: сума всіх елементів, поділена на їх кількість.'],['max(a) / min(a)','Це відношення найбільшого до найменшого, а не середнє.'],['a.sum() / a.len()','sum і len — функції, їх пишуть так: sum(a), len(a), а не через крапку.'],['sum(a) / a.count()','count(x) рахує, скільки разів трапляється конкретне значення x, а не всі елементи.']],a:[0]},
+ {t:'Обери ВСІ записи, які ЗМІНЮЮТЬ сам список a.',m:1,o:[
+  ['a.append(x)','Так: додає новий елемент у кінець — список змінюється.'],
+  ['a.insert(i, x)','Так: вставляє новий елемент — список змінюється.'],
+  ['a.pop(i)','Так: вилучає елемент — список стає коротшим.'],
+  ['a.count(x)','count() лише рахує входження — сам список не змінюється.'],
+  ['a.index(x)','index() лише шукає позицію — список залишається таким самим.'],
+  ['a[1:3]','Зріз створює НОВИЙ список — копію частини, а сам a не змінюється.']],a:[0,1,2]}
+];
+const sec=shell(0,'Тест за конспектом','вибір відповіді','Обери правильну відповідь. В останньому питанні правильних відповідей кілька. Після перевірки під кожним питанням з\'явиться коментар.');
+TASKS.push(sec);
+const body=$('.body',sec);
+const render=()=>{body.innerHTML='<div class="qs">'+Q.map((q,i)=>`<div class="q" data-q="${i}"><p class="t">${i+1}. ${q.t}${q.c&&!q.c.includes('\n')?` <code class="i">${esc(q.c)}</code>?`:''}</p>${q.c&&q.c.includes('\n')?code(q.c):''}
+  ${q.o.map((o,j)=>`<label class="opt"><input type="${q.m?'checkbox':'radio'}" name="q${i}" value="${j}"><span${(o[0][0]==='['||!/[а-яіїєґ]{3,}/i.test(o[0]))?' class="mono"':''}>${esc(o[0])}</span></label>`).join('')}<div class="cmx"></div></div>`).join('')+'</div>'};
+render();
+body.addEventListener('change',e=>{const q=e.target.closest('.q');$$('.opt',q).forEach(l=>l.classList.toggle('sel',$('input',l).checked));q.classList.remove('ok','bad');$('.cmx',q).innerHTML=''});
+const rh=hints(sec,['Перечитай розділи 1 і 3 конспекту: нумерація елементів завжди починається з 0, а -1 — це останній елемент.','Методи remove(), sort(), append() змінюють сам список. sort() при цьому нічого не повертає — тобто повертає None.','Одні методи лише «дивляться» на список (рахують, шукають, копіюють частину), а інші змінюють його вміст — додають або видаляють елементи.']);
+$('.chkb',sec).onclick=()=>{let bad=0,empty=0;
+  Q.forEach((q,i)=>{const el=$(`[data-q="${i}"]`,body);const ch=$$('input:checked',el).map(x=>+x.value);const cm=$('.cmx',el);
+    if(!ch.length){empty++;el.classList.remove('ok','bad');cm.innerHTML='<p class="cm">Тут ще немає відповіді.</p>';return}
+    const ok=ch.length===q.a.length&&ch.every(x=>q.a.includes(x));el.classList.toggle('ok',ok);el.classList.toggle('bad',!ok);if(!ok)bad++;
+    let t=ok?ch.map(x=>q.o[x][1]).join(' '):ch.filter(x=>!q.a.includes(x)).map(x=>q.o[x][1]).join(' ');
+    if(!ok&&q.m&&ch.every(x=>q.a.includes(x)))t='Усі обрані варіанти правильні, але обрано ще не всі.';
+    cm.innerHTML=`<p class="cm">${esc(t)}</p>`});
+  fb(sec,!bad&&!empty,[],!bad&&!empty?null:`Правильно ${Q.length-bad-empty} з ${Q.length}.`+(empty?` Без відповіді: ${empty}.`:'')+' Прочитай коментарі під питаннями.')};
+$('.rs',sec).onclick=()=>{render();clearFb(sec);rh()};
+$('.sol',sec).onclick=()=>{Q.forEach((q,i)=>{$$(`[data-q="${i}"] .opt`,body).forEach((l,j)=>l.classList.toggle('right',q.a.includes(j)))})};
+}
+
+/* ===== 2. MATCH ===== */
+{
+const P=[['append(x)','Додає x у кінець списку','append — завжди в кінець, без індексу.'],
+ ['insert(i, x)','Вставляє x на позицію з індексом i','У insert два аргументи: спочатку індекс, потім значення.'],
+ ['remove(x)','Видаляє перше входження значення x','remove шукає значення, а не індекс.'],
+ ['pop(i)','Видаляє й повертає елемент з індексом i (без i — останній)','pop працює з індексом і повертає вилучений елемент.'],
+ ['count(x)','Рахує, скільки разів x трапляється у списку','count — «порахувати».'],
+ ['index(x)','Повертає індекс першого входження x','index — «знайти позицію».'],
+ ['sort()','Впорядковує сам список за зростанням','sort — «сортувати».'],
+ ['reverse()','Розвертає список у зворотному порядку','reverse лише перевертає порядок, нічого не сортуючи.'],
+ ['len(a)','Повертає кількість елементів списку','len — це функція, а не метод: пишеться len(a).']];
+const sec=shell(1,'З\'єднай метод з тим, що він робить','з\'єднування','Натисни на метод ліворуч, а потім на його опис праворуч — з\'явиться лінія. Щоб змінити пару, просто з\'єднай по-новому.');
+TASKS.push(sec);const body=$('.body',sec);
+let R,pairs,selL=null,selR=null;
+const render=()=>{R=shuffle(P.map((_,i)=>i));pairs={};selL=selR=null;
+  body.innerHTML=`<div class="panel"><div class="match"><div class="col l">${P.map((p,i)=>`<button class="it" data-l="${i}">${esc(p[0])}</button>`).join('')}</div><div></div><div class="col r">${R.map(i=>`<button class="it" data-r="${i}">${esc(P[i][1])}</button>`).join('')}</div><svg></svg></div></div>`;draw()};
+function draw(res){const m=$('.match',body),svg=$('svg',m);if(!m)return;const b=m.getBoundingClientRect();let s='';
+  $$('.it',m).forEach(x=>x.classList.remove('lnk','pick','ok','bad'));
+  for(const l in pairs){const r=pairs[l],a=$(`[data-l="${l}"]`,m),c=$(`[data-r="${r}"]`,m),ra=a.getBoundingClientRect(),rc=c.getBoundingClientRect();
+    const x1=ra.right-b.left,y1=ra.top+ra.height/2-b.top,x2=rc.left-b.left,y2=rc.top+rc.height/2-b.top;
+    const col=res?(+l===r?'var(--ok)':'var(--bad)'):'var(--blue)';
+    s+=`<path d="M${x1} ${y1}C${(x1+x2)/2} ${y1} ${(x1+x2)/2} ${y2} ${x2} ${y2}" stroke="${col}" stroke-width="3" fill="none"/><circle cx="${x1}" cy="${y1}" r="5" fill="${col}"/><circle cx="${x2}" cy="${y2}" r="5" fill="${col}"/>`;
+    const k=res?(+l===r?'ok':'bad'):'lnk';a.classList.add(k);c.classList.add(k)}
+  svg.innerHTML=s;if(selL!==null)$(`[data-l="${selL}"]`,m).classList.add('pick');if(selR!==null)$(`[data-r="${selR}"]`,m).classList.add('pick')}
+let checked=false;
+body.addEventListener('click',e=>{const it=e.target.closest('.it');if(!it)return;checked=false;clearFb(sec);
+  if(it.dataset.l!==undefined)selL=+it.dataset.l;else selR=+it.dataset.r;
+  if(selL!==null&&selR!==null){for(const k in pairs)if(pairs[k]===selR)delete pairs[k];pairs[selL]=selR;selL=selR=null}
+  draw()});
+new ResizeObserver(()=>draw(checked)).observe(body);
+const rh=hints(sec,['Почни з тих, у яких упевнений(-а). Назви методів — англійські слова: append — додати, insert — вставити, remove — видалити, count — порахувати.','Різниця між remove і pop: remove(x) шукає ЗНАЧЕННЯ, pop(i) працює з ІНДЕКСОМ і повертає вилучений елемент.','sort() впорядковує, reverse() лише перевертає. len() — єдина тут функція, а не метод.']);
+$('.chkb',sec).onclick=()=>{const n=Object.keys(pairs).length;checked=true;draw(true);
+  const wrong=Object.keys(pairs).filter(l=>+l!==pairs[l]);
+  const items=wrong.map(l=>`<code class="i">${esc(P[l][0])}</code> — не «${esc(P[pairs[l]][1])}». ${P[l][2]}`);
+  if(n<P.length)items.push(`З'єднано ${n} з ${P.length} методів.`);
+  fb(sec,!wrong.length&&n===P.length,items)};
+$('.rs',sec).onclick=()=>{checked=false;render();clearFb(sec);rh()};
+$('.sol',sec).onclick=()=>{pairs={};P.forEach((_,i)=>pairs[i]=i);checked=true;draw(true)};
+render();
+}
+
+/* ===== 3. INDEX & SLICES ===== */
+{
+const L=[15,24,38,42,50];
+const E=[['L[0]','15','нумерація починається з нуля, тож L[0] — перший елемент, 15.'],
+ ['L[2]','38','індекс 2 — третій елемент: 0 → 15, 1 → 24, 2 → 38.'],
+ ['L[-1]','50','-1 — завжди останній елемент.'],
+ ['L[-2]','42','-2 — передостанній елемент.'],
+ ['L[5]','IndexError','індекси тут лише від 0 до 4 — індексу 5 не існує.'],
+ ['L[1:4]','[24, 38, 42]','зріз бере індекси 1, 2, 3 — елемент з індексом stop (4) НЕ включається.'],
+ ['L[:3]','[15, 24, 38]','start не вказано — від початку; беремо індекси 0, 1, 2.'],
+ ['L[3:]','[42, 50]','stop не вказано — до кінця: індекси 3 і 4.'],
+ ['L[::2]','[15, 38, 50]','крок 2 — кожен другий: індекси 0, 2, 4.'],
+ ['L[::-1]','[50, 42, 38, 24, 15]','крок -1 — увесь список у зворотному порядку.']];
+const BANK=['15','24','38','42','50','IndexError','[24, 38, 42]','[24, 38, 42, 50]','[15, 24, 38]','[15, 24, 38, 42]','[42, 50]','[38, 42, 50]','[15, 38, 50]','[24, 42]','[50, 42, 38, 24, 15]','[15, 24, 38, 42, 50]'];
+const sec=shell(2,'Індекси та зрізи','перетягування','Перетягни до кожного виразу його значення (або натисни на значення, а потім на віконце). Одне значення можна використати кілька разів, деякі — зайві. Щоб очистити віконце, натисни на нього.');
+TASKS.push(sec);const body=$('.body',sec);
+const lst=`<div class="lst"><span class="nm">L =</span>${L.map((v,i)=>`<div class="cell"><span class="v">${v}</span></div>`).join('')}</div>`;
+const render=()=>{body.innerHTML=`${lst}<div class="pal"><span>Перетягни:</span>${shuffle(BANK).map(b=>`<span class="chip" data-drag data-v="${esc(b)}">${esc(b)}</span>`).join('')}</div>
+  <div class="ex">${E.map((e,i)=>`<div class="exi" data-x="${i}"><code>${hl(e[0])}</code><span class="slot" data-drop data-i="${i}">?</span></div>`).join('')}</div>`};
+render();
+const setS=(z,v)=>{z.dataset.v=v??'';z.className='slot'+(v?' fill':'');z.textContent=v||'?';$(`[data-x="${z.dataset.i}"]`,body).classList.remove('ok','bad');$$('.ec',body).forEach(x=>x.remove());clearFb(sec)};
+dnd(body,(d,z)=>{if(z.classList.contains('slot'))setS(z,d.dataset.v)},z=>{if(z.classList.contains('slot'))setS(z,null)});
+const rh=hints(sec,['Нумерація елементів починається з 0: перший елемент — L[0], другий — L[1] і так далі. Останній має індекс len(L) - 1.','Від\'ємні індекси рахуються з кінця: останній елемент має індекс -1, передостанній — -2 і так далі.','Зріз L[start:stop:step]: елемент з індексом stop НЕ входить у результат. Порожній start — від початку, порожній stop — до кінця.']);
+$('.chkb',sec).onclick=()=>{let bad=0,empty=0;$$('.ec',body).forEach(x=>x.remove());
+  $$('.slot',body).forEach(z=>{const i=+z.dataset.i,e=E[i],box=$(`[data-x="${i}"]`,body);if(!z.dataset.v){empty++;return}
+    const ok=z.dataset.v===e[1];box.classList.toggle('ok',ok);box.classList.toggle('bad',!ok);if(!ok){bad++;box.insertAdjacentHTML('afterend',`<p class="ec">${esc(e[0])}: ${e[2]}</p>`)}});
+  fb(sec,!bad&&!empty,empty?[`Не заповнено віконець: ${empty}.`]:[],bad||empty?`Правильно ${E.length-bad-empty} з ${E.length}. Пояснення — під виразами з помилками.`:null)};
+$('.rs',sec).onclick=()=>{render();clearFb(sec);rh()};
+$('.sol',sec).onclick=()=>{$$('.slot',body).forEach(z=>{setS(z,E[+z.dataset.i][1]);$(`[data-x="${z.dataset.i}"]`,body).classList.add('ok')})};
+}
+
+/* ===== 4. WHAT'S IN THE LIST ===== */
+{
+const SRC='zoo = ["лев", "зебра", "жираф"]\nzoo.append("панда")\nzoo.insert(1, "тигр")\nzoo.remove("жираф")\nx = zoo.pop(0)\nzoo.reverse()';
+const AN=['лев','зебра','жираф','панда','тигр'];
+const CP=[{after:3,ans:['лев','тигр','зебра','жираф','панда'],why:'append("панда") додає панду в кінець, а insert(1, "тигр") ставить тигра в клітку з індексом 1 — зебра й усі наступні зсуваються праворуч.'},
+ {after:5,ans:['тигр','зебра','панда'],x:'лев',why:'remove("жираф") прибирає жирафа. pop(0) забирає з клітки 0 лева й повертає його — лев записується в x. Решта зсуваються ліворуч.'},
+ {after:6,ans:['панда','зебра','тигр'],why:'reverse() розвертає список: останній стає першим.'}];
+const N=5;
+const sec=shell(3,'Що буде в списку?','симуляція, перетягування','Тварини живуть у клітках-елементах списку. Простеж програму рядок за рядком і перетягни тварин у клітки так, як вони розміщені після вказаного рядка. Зайві клітки залишай порожніми. Щоб звільнити клітку, натисни на неї.');
+TASKS.push(sec);const body=$('.body',sec);
+const render=()=>{body.innerHTML=`<div class="two"><div class="codebox"><pre class="cd">${SRC.split('\n').map((l,i)=>`<span class="c">${i+1}</span>  ${hl(l)}`).join('\n')}</pre></div>
+ <div><div class="pal"><span>Тварини:</span>${AN.map(a=>`<span class="chip an" data-drag data-v="${a}">${a}</span>`).join('')}</div>
+ <div class="cl">${CP.map((c,k)=>`<div class="cp" data-c="${k}"><h3>Після рядка ${c.after}: <code class="i">zoo</code></h3><div class="cages">${Array.from({length:N},(_,i)=>`<div class="cg"><span class="slot" data-drop data-k="${k}"></span><span class="i">${i}</span></div>`).join('')}</div>${c.x?`<div class="xrow">x = <span class="slot" data-drop data-k="${k}" data-x="1"></span></div>`:''}</div>`).join('')}</div></div></div>`};
+render();
+const setS=(z,v)=>{z.dataset.v=v??'';z.classList.toggle('fill',!!v);z.classList.remove('ok','bad');z.textContent=v||'';$$('.cp',body).forEach(c=>{c.classList.remove('ok','bad');$('.ec',c)?.remove()});clearFb(sec)};
+dnd(body,(d,z)=>{if(z.classList.contains('slot'))setS(z,d.dataset.v)},z=>{if(z.classList.contains('slot'))setS(z,null)});
+const rh=hints(sec,['Не поспішай: після кожного рядка мислено перепиши весь список. Наприклад, після рядка 2: ["лев", "зебра", "жираф", "панда"].','insert(1, ...) ставить нового мешканця в клітку 1, а всі, хто був з 1-ї клітки й далі, переїжджають на одну праворуч. pop(0) і remove() навпаки — зсувають решту ліворуч.','pop(0) не лише вилучає першого, а й ПОВЕРТАЄ його — тому лев опиняється в змінній x.']);
+$('.chkb',sec).onclick=()=>{let bad=0;const items=[];
+  CP.forEach((c,k)=>{const box=$(`[data-c="${k}"]`,body);$('.ec',box)?.remove();
+    const v=$$('.cages .slot',box).map(z=>z.dataset.v||'');let last=v.length;while(last&&!v[last-1])last--;const got=v.slice(0,last);
+    const hole=got.includes('');const okL=!hole&&got.length===c.ans.length&&got.every((a,i)=>a===c.ans[i]);
+    const xs=c.x?$('[data-x]',box).dataset.v:null;const okX=!c.x||xs===c.x;
+    const ok=okL&&okX;box.classList.toggle('ok',ok);box.classList.toggle('bad',!ok);
+    $$('.cages .slot',box).forEach((z,i)=>{z.classList.remove('ok','bad');if(z.dataset.v)z.classList.add(z.dataset.v===c.ans[i]?'ok':'bad')});
+    if(!ok){bad++;let m=hole?'У списку не буває порожніх кліток посередині — елементи завжди йдуть підряд. ':'';if(!okL&&!hole&&got.length!==c.ans.length)m+=`У списку має бути ${c.ans.length} елемент${c.ans.length<5?'и':'ів'}. `;if(!okX)m+='Перевір значення x. ';
+      box.insertAdjacentHTML('beforeend',`<p class="ec" style="margin-top:8px">${m}${c.why}</p>`)}});
+  fb(sec,!bad,[],bad?`Правильно ${CP.length-bad} з ${CP.length} станів. Пояснення — під списками з помилками.`:null)};
+$('.rs',sec).onclick=()=>{render();clearFb(sec);rh()};
+$('.sol',sec).onclick=()=>{CP.forEach((c,k)=>{const box=$(`[data-c="${k}"]`,body);$$('.cages .slot',box).forEach((z,i)=>setS(z,c.ans[i]||null));if(c.x)setS($('[data-x]',box),c.x);box.classList.add('ok')})};
+}
+
+/* ===== 5. CREATE & GENERATE ===== */
+{
+const E=[['list(range(1, 6))','[1, 2, 3, 4, 5]','range(1, 6) дає числа від 1 до 5 — число 6 (stop) не входить.'],
+ ['list(range(0, 10, 3))','[0, 3, 6, 9]','третє число в range — крок: 0, 3, 6, 9 (10 вже не входить).'],
+ ['list("Python")','[\'P\', \'y\', \'t\', \'h\', \'o\', \'n\']','list() з рядка розбиває його на окремі символи.'],
+ ['"2 7 5".split()','[\'2\', \'7\', \'5\']','split() ділить рядок за пробілами, але частини залишаються ТЕКСТОМ — у лапках.'],
+ ['[int(x) for x in "2 7 5".split()]','[2, 7, 5]','int(x) перетворює кожну частину на число — тепер без лапок.'],
+ ['"лев,тигр".split(",")','[\'лев\', \'тигр\']','split(",") ділить рядок у місцях ком.'],
+ ['[i * i for i in range(1, 6)]','[1, 4, 9, 16, 25]','для кожного i від 1 до 5 береться i * i — квадрати.'],
+ ['[x for x in range(10) if x % 2 == 0]','[0, 2, 4, 6, 8]','умова if залишає лише ті x, що діляться на 2 без остачі (і 0 теж).'],
+ ['["так" if x > 0 else "ні" for x in [3, -1, 5]]','[\'так\', \'ні\', \'так\']','для кожного x обирається «так» або «ні» — кількість елементів не змінюється.'],
+ ['[randint(1, 6) for i in range(3)]','3 випадкові числа від 1 до 6','range(3) — три повторення, а randint(1, 6) включає обидві межі: і 1, і 6.']];
+const BANK=[...E.map(e=>e[1]),'[1, 2, 3, 4, 5, 6]','[0, 3, 6]','[\'Python\']','[2, 4, 6, 8]','[\'лев,тигр\']','[1, 4, 9, 16]','[\'так\', \'так\']','3 випадкові числа від 1 до 5'];
+const B=[{t:'Квадрати парних чисел від 1 до 10',a:['x * x','range(1, 11)','x % 2 == 0'],res:'[4, 16, 36, 64, 100]'},
+ {t:'Числа від 1 до 20, що діляться на 3',a:['x','range(1, 21)','x % 3 == 0'],res:'[3, 6, 9, 12, 15, 18]'}];
+const BB=['x * x','x * 2','x','range(1, 10)','range(1, 11)','range(1, 20)','range(1, 21)','x % 2 == 0','x % 2 == 1','x % 3 == 0','x // 3 == 0'];
+const WHY={'x * 2':'x * 2 подвоює число, а квадрат — це x * x.','x * x':'Тут потрібні самі числа, без змін — просто x.','x':'Потрібен квадрат числа — x * x.','range(1, 10)':'stop не входить: range(1, 10) закінчиться на 9.','range(1, 20)':'stop не входить: range(1, 20) закінчиться на 19.','range(1, 11)':'Потрібні числа до 20 включно.','range(1, 21)':'Потрібні числа до 10 включно.','x % 2 == 1':'Остача 1 — це непарні числа.','x // 3 == 0':'// — ціла частина ділення. Подільність перевіряють остачею: %.','x % 2 == 0':'Тут перевіряємо подільність на 3.','x % 3 == 0':'Тут потрібні парні числа.'};
+const PART=['вираз (що беремо)','звідки беремо','умова'];
+const sec=shell(4,'Створення та генерація списків','перетягування','<b>Частина 1.</b> Перетягни до кожного запису список, який він створить (значення можна використовувати кілька разів, деякі — зайві). <b>Частина 2.</b> Збери генератори списків з готових фрагментів. Щоб очистити віконце, натисни на нього.');
+TASKS.push(sec);const body=$('.body',sec);
+const render=()=>{body.innerHTML=`<div class="pa"><div class="pal"><span>Частина 1:</span>${shuffle(BANK).map(b=>`<span class="chip" data-drag data-v="${esc(b)}">${esc(b)}</span>`).join('')}</div>
+  <p class="pys" style="margin:0 0 8px">Для останнього запису на початку програми є рядок <code class="i">from random import randint</code>.</p>
+  <div class="ex ex2">${E.map((e,i)=>`<div class="exi" data-x="${i}"><code>${hl(e[0])}</code><span class="slot" data-drop data-i="${i}">?</span></div>`).join('')}</div></div>
+  <div class="pb"><h3 style="margin:26px 0 4px;font-size:20px">Частина 2. Збери генератор</h3><p class="pys" style="margin:0 0 6px">Загальний вигляд: <code class="i">[вираз for x in послідовність if умова]</code></p>
+  <div class="pal"><span>Частина 2:</span>${shuffle(BB).map(b=>`<span class="chip" data-drag data-v="${esc(b)}">${esc(b)}</span>`).join('')}</div>
+  <div class="cl">${B.map((b,k)=>`<div class="cp" data-g="${k}"><h3>${k+1}. ${b.t}</h3><div class="gap" style="white-space:normal">nums = [<span class="slot" data-drop data-g="${k}" data-p="0"></span> <span class="k">for</span> x <span class="k">in</span> <span class="slot" data-drop data-g="${k}" data-p="1"></span> <span class="k">if</span> <span class="slot" data-drop data-g="${k}" data-p="2"></span>]</div><div class="gr"></div></div>`).join('')}</div></div>`};
+render();
+const setA=(z,v)=>{z.dataset.v=v??'';z.className='slot'+(v?' fill':'');z.textContent=v||'?';$(`[data-x="${z.dataset.i}"]`,body).classList.remove('ok','bad');$$('.ec',$('.pa',body)).forEach(x=>x.remove());clearFb(sec)};
+const setB=(z,v)=>{z.dataset.v=v??'';z.className='slot'+(v?' fill':'');z.textContent=v||'';const c=z.closest('.cp');c.classList.remove('ok','bad');$('.gr',c).innerHTML='';clearFb(sec)};
+const bind=()=>{dnd($('.pa',body),(d,z)=>{if(z.classList.contains('slot'))setA(z,d.dataset.v)},z=>{if(z.classList.contains('slot'))setA(z,null)});
+  dnd($('.pb',body),(d,z)=>{if(z.classList.contains('slot'))setB(z,d.dataset.v)},z=>{if(z.classList.contains('slot'))setB(z,null)})};
+bind();
+const rh=hints(sec,['range(a, b) дає числа від a до b - 1, а третє число в range — крок. list() з рядка розбиває його на символи.','split() ділить рядок і дає список ТЕКСТІВ (у лапках). Щоб отримати числа, кожну частину перетворюють: int(x) for x in ….','Генератор читається так: [ЩО беремо for КОЖНЕ x in ЗВІДКИ if ЯКА УМОВА]. Подільність перевіряють остачею: x % 3 == 0.']);
+$('.chkb',sec).onclick=()=>{let bad=0,empty=0;const pa=$('.pa',body);$$('.ec',pa).forEach(x=>x.remove());
+  $$('.slot',pa).forEach(z=>{const i=+z.dataset.i,e=E[i],box=$(`[data-x="${i}"]`,pa);if(!z.dataset.v){empty++;return}
+    const ok=z.dataset.v===e[1];box.classList.toggle('ok',ok);box.classList.toggle('bad',!ok);if(!ok){bad++;box.insertAdjacentHTML('afterend',`<p class="ec">${esc(e[0])}: ${e[2]}</p>`)}});
+  let gb=0;B.forEach((b,k)=>{const c=$(`[data-g="${k}"].cp`,body),zs=$$('.slot',c),m=[];
+    zs.forEach((z,p)=>{const v=z.dataset.v,ok=v===b.a[p];z.classList.toggle('ok',ok);z.classList.toggle('bad',!ok);if(!ok)m.push(!v?`Порожнє віконце: ${PART[p]}.`:WHY[v]||`«${esc(v)}» тут не підходить (${PART[p]}).`)});
+    const ok=!m.length;c.classList.toggle('ok',ok);c.classList.toggle('bad',!ok);if(!ok)gb++;
+    $('.gr',c).innerHTML=ok?`<p class="cm" style="color:var(--ok)">Результат: <code class="i">${b.res}</code></p>`:`<p class="ec" style="margin-top:8px">${m.join(' ')}</p>`});
+  const tot=E.length+B.length,good=tot-bad-empty-gb;
+  fb(sec,!bad&&!empty&&!gb,empty?[`Частина 1: не заповнено віконець — ${empty}.`]:[],bad||empty||gb?`Правильно ${good} з ${tot}. Пояснення — під записами з помилками.`:null)};
+$('.rs',sec).onclick=()=>{render();bind();clearFb(sec);rh()};
+$('.sol',sec).onclick=()=>{$$('.pa .slot',body).forEach(z=>{setA(z,E[+z.dataset.i][1]);$(`[data-x="${z.dataset.i}"]`,body).classList.add('ok')});
+  B.forEach((b,k)=>{const c=$(`[data-g="${k}"].cp`,body);$$('.slot',c).forEach((z,p)=>setB(z,b.a[p]));c.classList.add('ok');$('.gr',c).innerHTML=`<p class="cm" style="color:var(--ok)">Результат: <code class="i">${b.res}</code></p>`})};
+}
+
+/* ===== 5. PARSONS ===== */
+{
+const LINES=['t = [int(x) for x in input().split()]','avg = sum(t) / len(t)','count = 0','for x in t:','    if x > avg:','        count += 1','print("Днів, тепліших за середнє:", count)'];
+const sec=shell(5,'Збери програму «Метеостанція»','перетягування рядків','Програма отримує температури за тиждень (в один рядок через пробіл) і рахує, скільки днів було тепліше за середню температуру. Розстав рядки в правильному порядку: перетягуй їх або користуйся стрілками ↑ ↓. Відступи вже на місці. Зібрану програму можна запустити.');
+TASKS.push(sec);const body=$('.body',sec);
+body.innerHTML=`<div class="two"><div><div class="pz" data-drop></div></div><div><button class="btn run rn">▶ Запустити зібрану програму</button><p class="pys"></p>${inBox('12 15 9 20 18 7 14')}<p class="lbl">Консоль</p><div class="con"></div></div></div>`;
+const pz=$('.pz',body),run=makeConsole($('.con',body));pyStatus($('.pys',body));
+const line=i=>`<div class="pl" data-drag data-drop data-i="${i}"><span class="tx">${hl(LINES[i])}</span><span class="mv"><button aria-label="Вгору" data-m="-1">↑</button><button aria-label="Вниз" data-m="1">↓</button></span></div>`;
+const order=()=>$$('.pl',pz).map(l=>+l.dataset.i);
+const valid=o=>o[0]===0&&o[6]===6&&[o[1],o[2]].sort().join()==='1,2'&&o[3]===3&&o[4]===4&&o[5]===5;
+const render=()=>{let o;do o=shuffle(LINES.map((_,i)=>i));while(valid(o));pz.innerHTML=o.map(line).join('')};
+render();
+const changed=()=>{$$('.pl',pz).forEach(l=>l.classList.remove('ok','bad'));clearFb(sec)};
+dnd(pz,(d,z,y)=>{
+  if(z===pz){pz.append(d)}
+  else if(y==null){const a=document.createElement('i');z.before(a);d.before(z);a.replaceWith(d)}
+  else{const r=z.getBoundingClientRect();y<r.top+r.height/2?z.before(d):z.after(d)}
+  changed()});
+pz.addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(!b)return;const l=b.closest('.pl');
+  if(b.dataset.m==='-1'&&l.previousElementSibling)l.previousElementSibling.before(l);else if(b.dataset.m==='1'&&l.nextElementSibling)l.nextElementSibling.after(l);changed()});
+$('.rn',body).onclick=()=>run(order().map(i=>LINES[i]).join('\n'),getLines(body));
+const rh=hints(sec,['Спочатку програма має отримати дані — список t. Без нього не можна порахувати середнє.','Перед циклом підготуй усе потрібне: середнє значення і лічильник count = 0.','Під for іде if (відступ 4), під if — count += 1 (відступ 8). Результат виводимо ПІСЛЯ циклу, один раз.']);
+$('.chkb',sec).onclick=()=>{const o=order(),PL=$$('.pl',pz),ok=valid(o),items=[];
+  PL.forEach((l,k)=>{const v=o[k];const good=ok||(k===0&&v===0)||(k===6&&v===6)||((k===1||k===2)&&(v===1||v===2))||(k>=3&&k<=5&&v===k);l.classList.toggle('ok',good);l.classList.toggle('bad',!good)});
+  const pos=i=>o.indexOf(i);
+  if(o[0]!==0)items.push('Першим має бути рядок, що створює список t: усі інші рядки ним користуються.');
+  if(pos(1)<pos(0))items.push('Середнє рахується зі списку t — тож avg можна обчислити лише після того, як t створено.');
+  if(pos(2)>pos(3))items.push('Лічильник count = 0 потрібно створити ДО циклу, інакше count += 1 видасть NameError.');
+  if(!(pos(4)===pos(3)+1&&pos(5)===pos(4)+1))items.push('Рядки циклу йдуть поспіль: for → if → count += 1.');
+  if(o[6]!==6)items.push('print стоїть останнім і без відступу — результат виводиться один раз, після завершення циклу.');
+  if(!ok&&!items.length)items.push('Перевір порядок рядків, позначених червоним.');
+  fb(sec,ok,items,ok?'Програму зібрано правильно! Рядки avg і count = 0 можна було поміняти місцями — обидва варіанти працюють.':null)};
+$('.rs',sec).onclick=()=>{render();clearFb(sec);rh()};
+$('.sol',sec).onclick=()=>{pz.innerHTML=LINES.map((_,i)=>line(i)).join('');$$('.pl',pz).forEach(l=>l.classList.add('ok'))};
+}
+
+/* ===== 6. GAPS ===== */
+{
+const G=[['split','list','list() розбило б рядок на окремі символи (навіть пробіли), а не на числа.','Метод рядка, що розбиває його на частини за пробілами.'],
+ ['append','add','add() — метод множини (set), у списку його немає.','Метод, що додає елемент у кінець списку.'],
+ ['sort','sorted','sorted() — функція: sorted(marks). Через крапку пишуть метод sort().','Метод, що впорядковує сам список.'],
+ ['len','count','count(x) рахує, скільки разів трапляється конкретне значення x.','Функція, що повертає кількість елементів списку.'],
+ ['0','-1','Список упорядковано за СПАДАННЯМ — найвища оцінка стоїть першою.','Де стоїть найбільший елемент після sort(reverse=True)?'],
+ ['-1','0','Після сортування за спаданням найнижча оцінка — остання.','Як звернутися до останнього елемента, не знаючи довжини?'],
+ [':3','0:2','Зріз [0:2] дасть лише ДВА елементи — stop не включається.','Зріз від початку до індексу 3 (не включно).']];
+const TPL='marks = [int(x) for x in input().{0}()]\nmarks.{1}(12)            # додали 12 за олімпіаду\nmarks.{2}(reverse=True)  # за спаданням\nprint("Усього оцінок:", {3}(marks))\nprint("Найвища:", marks[{4}])\nprint("Найнижча:", marks[{5}])\nprint("Три найкращі:", marks[{6}])';
+const BANK=['split','list','append','add','sort','sorted','len','count','0','1','-1',':3','0:2','3'];
+const sec=shell(6,'Заповни пропуски','підстановка','Програма зчитує оцінки учня (в один рядок через пробіл), додає оцінку 12 за олімпіаду, сортує їх за спаданням і виводить статистику. Перетягни потрібні фрагменти коду в порожні віконця. Кнопки можна використовувати кілька разів, а деякі — зайві.');
+TASKS.push(sec);const body=$('.body',sec);
+const render=()=>{body.innerHTML=`<div class="pal"><span>Фрагменти:</span>${shuffle(BANK).map(b=>`<span class="chip" data-drag data-v="${esc(b)}">${esc(b)}</span>`).join('')}</div>
+  <div class="gap">${TPL.split(/\{(\d)\}/).map((x,k)=>k%2?`<span class="slot" data-drop data-i="${x}">   </span>`:hl(x)).join('')}</div>`};
+render();
+const setS=(z,v)=>{z.dataset.v=v??'';z.className='slot'+(v?' fill':'');z.textContent=v||'   ';clearFb(sec)};
+dnd(body,(d,z)=>{if(z.classList.contains('slot'))setS(z,d.dataset.v)},z=>{if(z.classList.contains('slot'))setS(z,null)});
+const rh=hints(sec,['Перший рядок — спосіб введення списку з конспекту (розділ 2): [int(x) for x in input().split()].','Методи пишуться через крапку (marks.append), а функції — навпаки, список у дужках (len(marks)).','reverse=True — найбільші на початку. Перший елемент — індекс 0, останній — -1.']);
+$('.chkb',sec).onclick=()=>{const items=[];let ok=true;
+  $$('.slot',body).forEach(z=>{const g=G[+z.dataset.i],v=z.dataset.v;const r=v===g[0];z.classList.toggle('ok',r);z.classList.toggle('bad',!r);
+    if(!r){ok=false;items.push(`Віконце ${+z.dataset.i+1}: `+(!v?'порожнє. '+g[3]:v===g[1]?g[2]:`«${esc(v)}» тут не підходить. `+g[3]))}});
+  fb(sec,ok,items)};
+$('.rs',sec).onclick=()=>{render();clearFb(sec);rh()};
+$('.sol',sec).onclick=()=>{$$('.slot',body).forEach(z=>{setS(z,G[+z.dataset.i][0]);z.classList.add('ok')})};
+}
+
+/* ===== shared code-task UI ===== */
+function codeTask(host,o){
+  host.innerHTML=`<div class="two"><div><p class="lbl">Редактор коду</p><div class="edh"></div>${inBox(o.input)}<div class="bar"><button class="btn run rn">▶ Запустити</button><button class="btn pri ck">Перевірити на тестах</button><button class="btn rsc">Повернути початковий код</button></div><p class="pys"></p></div>
+   <div><p class="lbl">Консоль</p><div class="con"></div><div class="tests"></div><div class="xtra"></div></div></div><div class="solx"></div>`;
+  const ed=makeEditor($('.edh',host),o.start),run=makeConsole($('.con',host));pyStatus($('.pys',host));
+  $('.rn',host).onclick=()=>run(ed.get(),getLines(host));
+  $('.rsc',host).onclick=()=>{ed.set(o.start);$('.tests',host).innerHTML='';$('.xtra',host).innerHTML=''};
+  $('.ck',host).onclick=async()=>{const T=$('.tests',host);T.innerHTML='<p class="pys">Перевіряю…</p>';let res;
+    try{res=await runTests(ed.get(),o.tests)}catch(e){T.innerHTML='<div class="tr bad"><b>✗</b><div>Python не завантажився. Перевір інтернет і спробуй ще раз.</div></div>';return}
+    const first=res[0].err,src=ed.get();
+    if(first&&/Syntax|Indentation/.test(first[0]))T.innerHTML=`<div class="tr bad"><b>✗</b><div>Програма не запускається.<br><span class="mono" style="white-space:pre-line">${esc(errText(first))}</span></div></div>`;
+    else T.innerHTML=res.map(r=>`<div class="tr ${r.ok?'ok':'bad'}"><b>${r.ok?'✓':'✗'}</b><div>Введено <code class="i">${esc(r.t.inp.join(' ⏎ '))}</code> → очікується «${esc(r.t.out.join(' / '))}»${r.ok?'':`<br>${r.err?`<span class="mono" style="white-space:pre-line">${esc(errText(r.err))}</span>`:`програма вивела: «${esc(r.lines.join(' / ')||'нічого')}»`}${r.t.why?`<br><i>${r.t.why}</i>`:''}`}</div></div>`).join('');
+    const ok=res.every(r=>r.ok);o.after&&o.after(src,ok,$('.xtra',host));o.done(ok,res)};
+  return{ed,showSol:()=>{$('.solx',host).innerHTML=`<p class="lbl">Приклад правильного розв'язку (можуть бути й інші):</p>${code(o.sol)}`}};
+}
+
+/* ===== 7. FIX ERRORS ===== */
+{
+const START='nums = input("Введіть числа: ").split()\ncount = 0\nfor i in range(len(nums) + 1):\n    if nums[i] < 0\n        nums[i] = 0\n        count += 1\nnums = nums.sort()\nprint(nums)\nprint("Замінено:", Count)';
+const SOL='nums = [int(x) for x in input("Введіть числа: ").split()]\ncount = 0\nfor i in range(len(nums)):\n    if nums[i] < 0:\n        nums[i] = 0\n        count += 1\nnums.sort()\nprint(nums)\nprint("Замінено:", count)';
+const sec=shell(7,'Знайди й виправ помилки','виправлення помилок','Програма «Без мінусів» отримує числа в один рядок через пробіл, замінює всі від\'ємні числа на 0, сортує список за зростанням і виводить його, а також кількість замін. Але в коді <b>5 помилок</b>. Виправ їх прямо в редакторі, запускай програму й читай повідомлення — вони підкажуть, де шукати. Коли все працює, натисни «Перевірити на тестах».');
+TASKS.push(sec);
+const lines=s=>s.split('\n');
+const CH=[[s=>/\bint\b/.test(s),'Перетворення введених даних на числа'],
+ [s=>/range\s*\(\s*len\s*\(\s*nums\s*\)\s*\)/.test(s)&&!/len\s*\(\s*nums\s*\)\s*\+\s*1/.test(s),'Межі циклу range()'],
+ [s=>lines(s).some(l=>/^\s*if\b.*:\s*(#.*)?$/.test(l)),'Кінець рядка з if'],
+ [s=>!/=\s*nums\.sort\s*\(/.test(s)&&(/^\s*nums\.sort\s*\(\s*\)/m.test(s)||/sorted\s*\(\s*nums\s*\)/.test(s)),'Сортування списку'],
+ [s=>!/\bCount\b/.test(s),'Назва змінної в останньому print']];
+let ui;
+ui=codeTask($('.body',sec),{start:START,sol:SOL,input:'5 -2 8 -7 3',
+  tests:[{inp:['5 -2 8 -7 3'],out:['[0, 0, 3, 5, 8]','Замінено: 2']},{inp:['4 1 9'],out:['[1, 4, 9]','Замінено: 0'],why:'Якщо від\'ємних немає, замін теж немає — але список усе одно сортується.'},{inp:['-1 -5'],out:['[0, 0]','Замінено: 2']}],
+  after:(src,ok,box)=>{const n=CH.filter(c=>c[0](src)).length;box.innerHTML=`<p class="lbl">Виправлено ${n} з 5 помилок</p><ul class="chk">${CH.map(c=>`<li>${c[0](src)?'✅':'⬜'} ${c[1]}</li>`).join('')}</ul>`},
+  done:(ok)=>fb(sec,ok,ok?[]:['Подивись на результати тестів і список помилок під консоллю.'],ok?'Усі тести пройдено! Програма працює правильно.':null)});
+const rh=hints(sec,['Натисни «Запустити»: Python зупиняється на першій помилці й показує номер рядка. Виправ її — і запускай знову. Найперше Python знайде синтаксичну помилку (в рядку з if).','input().split() дає список ТЕКСТІВ: ["5", "-2", ...]. Текст не можна порівнювати з числом 0 — потрібен int(). А ще: останній індекс — len(nums) - 1, тож range(len(nums)) вже враховує всі елементи.','Метод sort() змінює сам список і повертає None — тому nums = nums.sort() «губить» список. І Python розрізняє великі й малі літери: count і Count — різні імена.']);
+$('.chkb',sec).onclick=()=>$('.ck',sec).click();
+$('.rs',sec).onclick=()=>{$('.rsc',sec).click();$('.solx',sec).innerHTML='';clearFb(sec);rh()};
+$('.sol',sec).textContent='Показати приклад розв\'язку';$('.sol',sec).onclick=()=>ui.showSol();
+}
+
+/* ===== 8. WRITE CODE ===== */
+{
+const SUB=[
+ {name:'А. Кіберспорт: Топ-3',ins:'Вводяться результати гравців турніру (цілі числа в один рядок через пробіл, щонайменше три). Виведи <b>список трьох найкращих результатів за спаданням</b>, наприклад <code class="i">[95, 91, 88]</code>.',
+  input:'70 95 88 60 91',start:'# Напиши програму тут\n',sol:'scores = [int(x) for x in input().split()]\nscores.sort(reverse=True)\nprint(scores[:3])',
+  tests:[{inp:['70 95 88 60 91'],out:['[95, 91, 88]']},{inp:['10 20 30'],out:['[30, 20, 10]']},{inp:['5 5 9 1'],out:['[9, 5, 5]'],why:'Однакові результати теж рахуються: двоє гравців мають по 5.'}],
+  hints:['Отримай список чисел: <code class="i">scores = [int(x) for x in input().split()]</code>.','Відсортуй за спаданням: <code class="i">scores.sort(reverse=True)</code>.','Перші три елементи — це зріз <code class="i">scores[:3]</code>. Виведи його через print().']},
+ {name:'Б. Знижка',ins:'Вводяться ціни товарів у гривнях (цілі числа через пробіл). На всі товари <b>дорожчі за 500 грн</b> діє знижка 20%: нова ціна — <code class="i">int(ціна * 0.8)</code>. Онови ціни <b>в тому ж списку</b> і виведи два рядки: сам список і <b>Зі знижкою: N</b>, де N — кількість змінених цін.',
+  input:'600 300 1000 120',start:'# Напиши програму тут\n',sol:'prices = [int(x) for x in input().split()]\ncount = 0\nfor i in range(len(prices)):\n    if prices[i] > 500:\n        prices[i] = int(prices[i] * 0.8)\n        count += 1\nprint(prices)\nprint("Зі знижкою:", count)',
+  tests:[{inp:['600 300 1000 120'],out:['[480, 300, 800, 120]','Зі знижкою: 2']},{inp:['500 499'],out:['[500, 499]','Зі знижкою: 0'],why:'500 не дорожче за 500 — знижки немає. Умова: prices[i] > 500.'},{inp:['1250 501'],out:['[1000, 400]','Зі знижкою: 2']}],
+  hints:['Щоб змінювати елементи, перебирай список за індексами: <code class="i">for i in range(len(prices)):</code>.','Усередині циклу: <code class="i">if prices[i] > 500:</code> — нова ціна й лічильник +1.','Обидва print — після циклу, без відступу.']},
+ {name:'В. Зоопарк',ins:'Перший рядок — тварини в клітках через кому без пробілів, наприклад <code class="i">лев,тигр,зебра,лев</code>. Другий рядок — назва тварини. Якщо така тварина є, виведи два рядки: <b>Кількість: N</b> і <b>Перша клітка: I</b> (індекс першої такої тварини). Якщо такої немає — виведи лише <b>Немає</b>.',
+  input:'лев,тигр,зебра,лев\nлев',start:'# Напиши програму тут\n',sol:'zoo = input().split(",")\nname = input()\nif name in zoo:\n    print("Кількість:", zoo.count(name))\n    print("Перша клітка:", zoo.index(name))\nelse:\n    print("Немає")',
+  tests:[{inp:['лев,тигр,зебра,лев','лев'],out:['Кількість: 2','Перша клітка: 0']},{inp:['зебра,панда,лев,панда','панда'],out:['Кількість: 2','Перша клітка: 1']},{inp:['лев,тигр','жираф'],out:['Немає'],why:'Без перевірки через in метод index() видасть ValueError, якщо тварини немає.'}],
+  hints:['Розбий рядок за комою: <code class="i">zoo = input().split(",")</code>.','Перевір наявність: <code class="i">if name in zoo:</code>, інакше — else.','Тобі допоможуть методи <code class="i">count()</code> та <code class="i">index()</code>.']}];
+const sec=shell(8,'Напиши програму сам(-а)','написання коду','Три завдання, як на підсумковій практичній роботі. Пиши код у редакторі (Tab — відступ, Enter після «:» ставить відступ сам). У полі «Вхідні дані» можна змінювати те, що отримає input(). Великі/малі літери й розділові знаки тести не враховують.');
+TASKS.push(sec);const body=$('.body',sec);
+body.innerHTML=`<div class="subt">${SUB.map((s,i)=>`<button data-s="${i}" class="${i?'':'on'}">${s.name}</button>`).join('')}</div>${SUB.map((s,i)=>`<div class="sp" data-p="${i}" ${i?'hidden':''}><p class="ins">${s.ins}</p><div class="ch"></div></div>`).join('')}`;
+const done=SUB.map(()=>false);let curS=0;const uis=[];
+SUB.forEach((s,i)=>{const p=$(`[data-p="${i}"]`,body);
+  uis[i]=codeTask($('.ch',p),{start:s.start,sol:s.sol,tests:s.tests,input:s.input,
+    after:(src,ok,box)=>{const t=[];if(!/input\s*\(/.test(src))t.push('Програма має сама отримувати дані через input(), а не містити готовий список.');
+      if(i===1&&ok&&/\[\s*int\s*\(\s*\w+\s*\*\s*0?\.8\s*\)\s*for/.test(src))t.push('Працює, але за умовою ціни треба оновити в ТОМУ Ж списку — спробуй через for i in range(len(prices)).');
+      box.innerHTML=t.map(x=>`<p class="hint">${x}</p>`).join('')},
+    done:(ok)=>{if(ok)done[i]=true;$$('.subt button',body)[i].classList.toggle('done',done[i]);
+      const all=done.every(Boolean),left=SUB.filter((_,k)=>!done[k]).map(x=>x.name).join(', ');
+      fb(sec,ok&&all,ok&&!all?['Ще залишилось: '+left+'.']:ok?[]:['Подивись, на яких тестах програма помиляється, і виправ код.'],ok?(all?'Усі три програми працюють — ти готовий(-а) до практичної роботи!':'Ця програма пройшла всі тести!'):null);
+      if(ok&&!all){$('.sol',sec).hidden=true;$('.fb',sec).className='fb ok'}}})});
+const hk=SUB.map(()=>0);
+const lab=()=>{const h=SUB[curS].hints;$('.hb',sec).textContent=hk[curS]<h.length?`Підказка ${hk[curS]+1} з ${h.length}`:'Підказки закінчились'};lab();
+$('.hb',sec).onclick=()=>{const h=SUB[curS].hints;if(hk[curS]>=h.length)return;const box=$('.hint',sec);box.hidden=false;box.insertAdjacentHTML('beforeend',`<p><b>${SUB[curS].name[0]}${hk[curS]+1}.</b> ${h[hk[curS]]}</p>`);hk[curS]++;lab()};
+$('.subt',body).onclick=e=>{const b=e.target.closest('button');if(!b)return;curS=+b.dataset.s;$$('.subt button',body).forEach((x,k)=>x.classList.toggle('on',k===curS));$$('.sp',body).forEach((x,k)=>x.hidden=k!==curS);lab()};
+$('.chkb',sec).onclick=()=>$(`[data-p="${curS}"] .ck`,body).click();
+$('.rs',sec).onclick=()=>{$(`[data-p="${curS}"] .rsc`,body).click();$(`[data-p="${curS}"] .solx`,body).innerHTML='';clearFb(sec);hk[curS]=0;$('.hint',sec).innerHTML='';$('.hint',sec).hidden=true;lab()};
+$('.sol',sec).textContent='Показати приклад розв\'язку';$('.sol',sec).onclick=()=>uis[curS].showSol();
+}
+
+/* memo */
+$('#main').insertAdjacentHTML('beforeend',`<details class="memo"><summary>Пам'ятка з конспекту</summary>
+<p><b>Список</b> — впорядкована змінювана колекція в <code class="i">[ ]</code>. Нумерація з <b>0</b>; останній елемент — <code class="i">a[-1]</code> або <code class="i">a[len(a) - 1]</code>.</p>
+<p><b>Зріз</b> <code class="i">a[start:stop:step]</code> — елемент з індексом stop не входить. <code class="i">a[::-1]</code> — у зворотному порядку.</p>
+<p><b>Введення:</b> <code class="i">a = [int(x) for x in input().split()]</code></p>
+<table><tr><th>Запис</th><th>Що робить</th></tr>
+<tr><td><code class="i">len(a)</code>, <code class="i">sum(a)</code>, <code class="i">min(a)</code>, <code class="i">max(a)</code></td><td>довжина (length), сума, найменший, найбільший</td></tr>
+<tr><td><code class="i">a.append(x)</code> (додати)</td><td>додає x у кінець</td></tr>
+<tr><td><code class="i">a.insert(i, x)</code> (вставити)</td><td>вставляє x на позицію i</td></tr>
+<tr><td><code class="i">a.remove(x)</code> (видалити)</td><td>видаляє перше входження x</td></tr>
+<tr><td><code class="i">a.pop(i)</code> (вилучити)</td><td>видаляє й повертає елемент з індексом i (без i — останній)</td></tr>
+<tr><td><code class="i">a.count(x)</code> (порахувати) / <code class="i">a.index(x)</code> (індекс)</td><td>кількість входжень x / індекс першого x</td></tr>
+<tr><td><code class="i">a.sort()</code> (сортувати) / <code class="i">a.reverse()</code> (розвернути)</td><td>за зростанням (<code class="i">reverse=True</code> — за спаданням) / зворотний порядок</td></tr></table>
+<p><b>Перебір:</b> <code class="i">for x in a:</code> — значення; <code class="i">for i in range(len(a)):</code> — індекси, коли елементи треба змінювати.</p></details>`);
+
+const h=+(location.hash.match(/^#t([1-9])$/)||[])[1];
+go(h?h-1:0);
+window.addEventListener('hashchange',()=>{const n=+(location.hash.match(/^#t([1-9])$/)||[])[1];if(n&&n-1!==cur)go(n-1)});
+}
+</script>
+</body>
+</html>
