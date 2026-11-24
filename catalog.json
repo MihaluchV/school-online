@@ -276,8 +276,8 @@
        "desc": "Проєктування схеми БД. Визначення типів даних.",
        "materials": [
         {
-         "type": "trainer",
-         "title": "Тренажер «Зоопарк»",
+         "type": "practical",
+         "title": "БД «Зоопарк»",
          "file": "https://mihaluchv.github.io/modeling-db-zoo/",
          "open": true,
          "new": false
@@ -289,7 +289,7 @@
        "desc": "Первинні і зовнішні ключі. Встановлення зв’язків між реляційними таблицями",
        "materials": [
         {
-         "type": "trainer",
+         "type": "practical",
          "title": "Квест \"Встановлення зв'язків\"",
          "file": "https://mihaluchv.github.io/quest-relationships-database/",
          "open": true,
