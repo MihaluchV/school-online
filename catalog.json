@@ -6,6 +6,7 @@
   "slides": "Презентація",
   "video": "Відеоурок",
   "trainer": "Тренажер",
+  "practical": "Практична",
   "test": "Контрольна"
  },
  "platforms": [
@@ -306,6 +307,13 @@
          "file": "https://mihaluchv.github.io/db_control_test/",
          "open": false,
          "new": true
+        },
+        {
+         "type": "trainer",
+         "title": "",
+         "file": "9/databases/bd-trainer.html",
+         "open": true,
+         "new": true
         }
        ]
       }
@@ -317,7 +325,21 @@
      "desc": "Списки, функції, обробка даних.",
      "art": "python",
      "img": "",
-     "topics": []
+     "topics": [
+      {
+       "title": "Списки. Вступ",
+       "desc": "Створення, індекси, заміна, додавання та вилучення елементів",
+       "materials": [
+        {
+         "type": "theory",
+         "title": "Опорний конспект",
+         "file": "https://drive.google.com/file/d/1lbFo94Ilx0z93g1xK4FcywHsCz67TPXY/view?usp=sharing",
+         "open": true,
+         "new": false
+        }
+       ]
+      }
+     ]
     }
    ]
   },
