@@ -272,12 +272,25 @@
      "topics": [
       {
        "title": "Моделювання БД",
-       "desc": "Проєктування моделі БД, визначення типів даних та встановлення зв’язків між таблицями",
+       "desc": "Проєктування схеми БД. Визначення типів даних.",
        "materials": [
         {
          "type": "trainer",
          "title": "Тренажер «Зоопарк»",
          "file": "https://mihaluchv.github.io/modeling-db-zoo/",
+         "open": true,
+         "new": false
+        }
+       ]
+      },
+      {
+       "title": "Типи зв'язків в реляційних БД",
+       "desc": "Первинні і зовнішні ключі. Встановлення зв’язків між реляційними таблицями",
+       "materials": [
+        {
+         "type": "trainer",
+         "title": "Квест \"Встановлення зв'язків\"",
+         "file": "https://mihaluchv.github.io/quest-relationships-database/",
          "open": true,
          "new": false
         }
