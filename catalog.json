@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated": "2026-11-23",
+ "updated": "2026-11-24",
  "types": {
   "theory": "Теорія",
   "slides": "Презентація",
@@ -271,12 +271,12 @@
      "img": "",
      "topics": [
       {
-       "title": "Моделювання БД «Зоопарк»",
+       "title": "Моделювання БД",
        "desc": "Проєктуємо таблиці та зв’язки між ними.",
        "materials": [
         {
          "type": "trainer",
-         "title": "",
+         "title": "Моделювання БД «Зоопарк»",
          "file": "https://mihaluchv.github.io/modeling-db-zoo/",
          "open": true,
          "new": false
