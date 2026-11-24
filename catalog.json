@@ -266,7 +266,7 @@
     {
      "id": "databases",
      "title": "БД та СУБД",
-     "desc": "Таблиці, ключі, зв’язки, запити.",
+     "desc": "Таблиці, типи даних, ключі, зв’язки, форми, запити. Моделювання, створення, пошук інформації.",
      "art": "db",
      "img": "",
      "topics": [
@@ -304,8 +304,8 @@
          "type": "test",
          "title": "Підсумкова робота",
          "file": "https://mihaluchv.github.io/db_control_test/",
-         "open": true,
-         "new": false
+         "open": false,
+         "new": true
         }
        ]
       }
