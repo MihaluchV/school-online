@@ -295,6 +295,19 @@
          "new": false
         }
        ]
+      },
+      {
+       "title": "Побудова БД",
+       "desc": "Створення таблиць. Редагування, пошук інформації.",
+       "materials": [
+        {
+         "type": "test",
+         "title": "Підсумкова робота",
+         "file": "https://mihaluchv.github.io/db_control_test/",
+         "open": true,
+         "new": false
+        }
+       ]
       }
      ]
     },
