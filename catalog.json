@@ -1,12 +1,13 @@
 {
  "version": 1,
- "updated": "2026-11-24",
+ "updated": "2026-11-28",
  "types": {
   "theory": "Теорія",
   "slides": "Презентація",
   "video": "Відеоурок",
   "trainer": "Тренажер",
   "practical": "Практична",
+  "quiz": "Тест",
   "test": "Контрольна"
  },
  "platforms": [
@@ -150,7 +151,21 @@
      "desc": "Змінні, введення-виведення, розгалуження.",
      "art": "python",
      "img": "",
-     "topics": []
+     "topics": [
+      {
+       "title": "Програма. Мови програмування. Професії",
+       "desc": "Урок 1",
+       "materials": [
+        {
+         "type": "theory",
+         "title": "Інтерактивний урок",
+         "file": "7/python/urok-1.html",
+         "open": true,
+         "new": false
+        }
+       ]
+      }
+     ]
     },
     {
      "id": "multimedia",
