@@ -154,12 +154,25 @@
      "topics": [
       {
        "title": "Програма. Мови програмування. Професії",
-       "desc": "Урок 1",
+       "desc": "",
        "materials": [
         {
          "type": "theory",
          "title": "Інтерактивний урок",
          "file": "7/python/urok-1.html",
+         "open": true,
+         "new": true
+        }
+       ]
+      },
+      {
+       "title": "Середовища створення проєктів",
+       "desc": "",
+       "materials": [
+        {
+         "type": "theory",
+         "title": "Інтерактивний урок",
+         "file": "7/python/urok-2.html",
          "open": true,
          "new": false
         }
