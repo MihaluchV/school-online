@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Урок 1. Програма. Мови програмування</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: дружній, ясний, для 12-13 років; коротко й наочно
+   IDEA: зошит юного програміста — від блоків Scratch до рядка коду Python
+   PICTURE: блоки Scratch, що перетворюються на код, і анімовані схеми кожного кроку
+   COLOUR and TYPE: глибокий синій (#0b1f4b), білі панелі, маджента-акцент, жовтий Python для коду; Rubik + Inter + JetBrains Mono
+   LAYOUT: верхня смуга з навігацією етапів, одна колонка до 1100px, кожен етап — окремий екран */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#070f26);--panel:light-dark(#ffffff,#0f1c3d);--soft:light-dark(#eef2fb,#132452);
+--ink:light-dark(#10183a,#e9edf8);--mute:light-dark(#55608a,#a6b0d2);--line:light-dark(#d6dcef,#25366a);
+--navy:#0b1f4b;--mag:#e0115f;--mag-soft:light-dark(#fde6ef,#3d1330);--yel:#ffd43b;--pyb:#3776ab;
+--ok:light-dark(#0f8a4f,#43d18d);--ok-soft:light-dark(#e3f6ec,#0f3324);--bad:light-dark(#c2410c,#ff9b6a);--bad-soft:light-dark(#fff0e6,#3a1d10);
+--code:light-dark(#0f1730,#050a1c)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:80px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Rubik,Inter,sans-serif;line-height:1.1;text-wrap:balance;margin:0 0 .5em}
+h1{font-size:clamp(28px,4.4vw,46px)}h2{font-size:clamp(24px,3.2vw,34px)}h3{font-size:20px}
+p{margin:0 0 .8em}
+code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+code{overflow-wrap:anywhere}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--mag);outline-offset:2px}
+
+/* верхня смуга */
+.top{background:var(--navy);color:#fff;position:sticky;top:0;z-index:30;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.top-in{max-width:1180px;margin:0 auto;padding:10px max(3vw,12px);display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.brand{font-family:Rubik,Inter,Arial,sans-serif;font-weight:600;font-size:15px;opacity:.9;margin-right:auto}
+.brand b{color:var(--yel);font-weight:600}
+.tbtn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:10px;padding:8px 12px;min-height:40px;font-size:14px}
+.tbtn:hover{background:rgba(255,255,255,.22)}
+select.tbtn option{color:#10183a}
+@media(max-width:600px){.brand{font-size:13px;flex-basis:100%}.top-in{padding-top:8px;padding-bottom:6px}.top-in .tbtn{flex:1;min-height:38px;padding:6px 10px}}
+.steps{max-width:1180px;margin:0 auto;padding:0 max(3vw,12px) 10px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin}
+.steps button{flex:none;border:0;border-radius:999px;padding:7px 12px;background:rgba(255,255,255,.1);color:#cfd7f3;font-size:13.5px;min-height:36px;white-space:nowrap}
+.steps button .n{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.18);font-size:12px;margin-right:6px}
+.steps button.cur{background:var(--yel);color:#10183a;font-weight:600}
+.steps button.cur .n{background:#10183a;color:var(--yel)}
+.steps button.seen:not(.cur) .n{background:var(--ok);color:#fff}
+
+main{max-width:1100px;margin:0 auto;padding:clamp(20px,3vw,40px) max(4vw,14px) 60px}
+.stage{display:none;animation:fade .35s ease}
+.stage.cur{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{color:var(--mag);font-weight:600;font-size:15px;margin-bottom:6px}
+.lead{font-size:18px;color:var(--mute);max-width:68ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:clamp(16px,2.4vw,28px);margin:18px 0}
+.soft{background:var(--soft);border-radius:14px;padding:14px 18px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media(max-width:760px){.grid2,.grid3{grid-template-columns:minmax(0,1fr)}}
+.btn{border:0;border-radius:12px;padding:11px 18px;min-height:44px;font-weight:600;background:var(--soft);color:var(--ink)}
+.btn:hover{filter:brightness(.96)}
+.btn.pri{background:var(--mag);color:#fff}
+.btn.blue{background:var(--navy);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.nav-bottom{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+
+/* вітання */
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px;align-items:center}
+@media(max-width:820px){.hero{grid-template-columns:minmax(0,1fr)}}
+.hero svg{width:100%;height:auto;display:block}
+.plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:12px}
+.plan div{background:var(--soft);border-radius:12px;padding:10px 12px;font-size:14px}
+.plan b{display:block;font-family:Rubik,Inter,Arial,sans-serif;font-size:15px}
+.plan span{color:var(--mute)}
+ul.goals{padding-left:1.2em;margin:.4em 0}ul.goals li{margin:.25em 0}
+
+/* огляд розділу */
+.lessons{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.lcard{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--panel)}
+.lcard .num{font-family:Rubik,Inter,Arial,sans-serif;font-weight:700;color:var(--pyb);font-size:14px}
+.lcard.now{border:2px solid var(--mag);background:var(--mag-soft)}
+.lcard.now .num{color:var(--mag)}
+.lcard h3{font-size:17px;margin:.2em 0 .3em}
+.lcard p{font-size:14px;color:var(--mute);margin:0}
+
+/* scratch-блоки */
+.sb{display:inline-block;position:relative;color:#fff;font-weight:600;font-size:14px;padding:8px 14px 8px 12px;border-radius:6px;margin:0;line-height:1.3;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.sb-ev{background:#ffbf00;color:#4a3500;border-radius:16px 16px 6px 6px}
+.sb-lk{background:#9966ff}.sb-mo{background:#4c97ff}.sb-ct{background:#ffab19;color:#4a3000}
+.sb i{font-style:normal;background:#fff;color:#333;border-radius:10px;padding:0 8px;margin:0 3px;font-weight:500}
+.stack{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+
+/* актуалізація */
+.kitchen{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:22px;align-items:start}
+@media(max-width:760px){.kitchen{grid-template-columns:minmax(0,1fr)}}
+.robot-wrap{position:relative;text-align:center}
+.robot-wrap svg{width:min(260px,70%);height:auto}
+.bubble{background:var(--panel);border:2px solid var(--line);border-radius:16px;padding:10px 14px;font-weight:500;min-height:48px;margin:0 auto 10px;max-width:320px;transition:.3s}
+.bubble.err{border-color:var(--bad);background:var(--bad-soft)}
+.bubble.good{border-color:var(--ok);background:var(--ok-soft)}
+.robot.shake{animation:shake .5s}
+@keyframes shake{25%{transform:translateX(-8px) rotate(-3deg)}75%{transform:translateX(8px) rotate(3deg)}}
+ol.recipe{list-style:none;padding:0;margin:0;counter-reset:r}
+ol.recipe li{counter-increment:r;display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;border:1px solid var(--line);margin-bottom:8px;transition:.3s;background:var(--panel)}
+ol.recipe li::before{content:counter(r);display:grid;place-items:center;flex:none;width:28px;height:28px;border-radius:50%;background:var(--soft);font-weight:600;font-size:14px}
+ol.recipe li.run{border-color:var(--pyb);box-shadow:0 0 0 3px rgba(55,118,171,.25)}
+ol.recipe li.done{border-color:var(--ok)}
+ol.recipe li.done::before{background:var(--ok);color:#fff}
+ol.recipe li.err{border-color:var(--bad);background:var(--bad-soft)}
+ol.recipe li.fixed span{color:var(--ok);font-weight:600}
+
+/* плеєр теорії */
+.player{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--panel)}
+.tp-head{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--soft);border-bottom:1px solid var(--line)}
+.tp-title{font-family:Rubik,Inter,Arial,sans-serif;font-weight:600;font-size:18px}
+.tp-count{font-size:14px;color:var(--mute)}
+.tp-dots{display:flex;gap:5px;flex-wrap:wrap}
+.tp-dots button{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--panel);font-size:12px;padding:0}
+.tp-dots button.cur{background:var(--navy);color:#fff;border-color:var(--navy)}
+.tp-dots button.seen:not(.cur){background:var(--ok-soft);border-color:var(--ok)}
+.tp-stage{min-height:380px;padding:clamp(14px,2.5vw,28px);position:relative}
+.tp-cap{border-top:1px solid var(--line);padding:14px 18px;background:light-dark(#fffbea,#1a1a10);font-size:17px;line-height:1.5;min-height:78px;display:flex;gap:12px;align-items:flex-start}
+.tp-text{max-height:42vh;overflow-y:auto}
+.tp-cap .ico{flex:none;width:28px;height:28px;border-radius:50%;background:var(--yel);display:grid;place-items:center;color:#10183a;font-weight:700;font-size:14px}
+.tp-ctrl{display:flex;flex-wrap:wrap;gap:8px;padding:12px 18px;border-top:1px solid var(--line);justify-content:space-between}
+.tp-ctrl .row{gap:8px}
+@media(max-width:600px){.tp-ctrl{padding:10px}.tp-ctrl .row{width:100%}.tp-ctrl .btn{flex:1 1 auto;padding:8px 10px;font-size:14px;min-height:42px}.tp-stage{min-height:300px}}
+.tts-note{font-size:13px;color:var(--mute);padding:0 18px 10px}
+.b{opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s}
+.b.on{opacity:1;transform:none}
+.hl{background:var(--yel)!important;color:#10183a!important;border-radius:4px;box-shadow:0 0 0 3px var(--yel);transition:.3s}
+.def{border-left:5px solid var(--mag);background:var(--mag-soft);padding:12px 16px;border-radius:0 12px 12px 0;font-size:17px;margin-top:16px}
+.duo{display:grid;grid-template-columns:minmax(0,1fr) 60px minmax(0,1fr);gap:12px;align-items:center}
+@media(max-width:640px){.duo{grid-template-columns:minmax(0,1fr)}.duo .arr{transform:rotate(90deg);justify-self:center}}
+.arr{font-size:36px;color:var(--mag);text-align:center;font-weight:700}
+.codebox{background:var(--code);color:#e8ecff;border-radius:12px;padding:14px 16px;font-family:"JetBrains Mono",monospace;font-size:15px;line-height:1.7;overflow-x:auto;white-space:pre}
+.codebox .k{color:var(--yel)}.codebox .s{color:#9ee6a8}.codebox .p{color:#ff9fc4}.codebox .c{color:#7f8bb5}
+.codebox .ln{display:block;padding:0 6px;border-radius:6px;transition:.3s}
+.codebox .ln.run{background:rgba(55,118,171,.45)}
+.codebox .ln.err{background:rgba(224,17,95,.45)}
+.codebox .ln.skip{opacity:.35;text-decoration:line-through}
+.console{background:#000;color:#d7ffd9;border-radius:10px;padding:10px 14px;font-family:"JetBrains Mono",monospace;font-size:14px;min-height:60px;white-space:pre-wrap}
+.console .e{color:#ff8a8a}
+.caption-tag{font-size:13px;color:var(--mute);margin-bottom:6px}
+.parts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}
+@media(max-width:700px){.parts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.part{border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14px;background:var(--panel)}
+.part b{display:block;font-family:Rubik,Inter,Arial,sans-serif;font-size:16px;color:var(--pyb)}
+.meanings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+@media(max-width:560px){.meanings{grid-template-columns:minmax(0,1fr)}}
+.meaning{border:1px dashed var(--line);border-radius:12px;padding:12px;text-align:center;font-size:15px}
+.meaning svg{width:56px;height:56px;display:block;margin:0 auto 6px}
+.phrase{font-family:Rubik,Inter,Arial,sans-serif;font-size:clamp(22px,3vw,30px);text-align:center;padding:10px;border-radius:14px;background:var(--soft)}
+.ladder{display:grid;gap:10px}
+.rung{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:center;border-radius:12px;padding:12px 14px;border:1px solid var(--line);background:var(--panel)}
+@media(max-width:560px){.rung{grid-template-columns:minmax(0,1fr)}}
+.rung .lv{font-family:Rubik,Inter,Arial,sans-serif;font-weight:600}
+.rung .mono{font-size:16px}
+.rung.hi{border-color:var(--pyb);background:light-dark(#e9f2fb,#10284a)}
+.rung.lo{border-color:var(--line);background:var(--soft)}
+.cpu{display:flex;align-items:center;gap:12px;justify-content:center;font-weight:600}
+.cpu svg{width:64px;height:64px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:3px 10px;border-radius:999px;margin-left:6px}
+.tag.lo{background:var(--soft);color:var(--mute);border:1px solid var(--line)}
+.tag.hi{background:var(--pyb);color:#fff}
+
+/* транслятори */
+.lane{display:grid;grid-template-columns:minmax(0,1fr) 150px minmax(0,1fr);align-items:center;gap:10px;padding:14px;border-radius:14px;background:var(--soft);margin-bottom:12px;position:relative;overflow:hidden}
+@media(max-width:600px){.lane{grid-template-columns:minmax(0,1fr)}}
+.lane h4{grid-column:1/-1;margin:0 0 4px;font-family:Rubik,Inter,Arial,sans-serif;font-size:17px}
+.tbox{background:var(--navy);color:#fff;border-radius:12px;padding:12px;text-align:center;font-weight:600;font-family:Rubik,Inter,Arial,sans-serif;position:relative;z-index:2}
+.tbox small{display:block;font-weight:400;font-family:Inter,Arial,sans-serif;font-size:12px;opacity:.8}
+.doc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.5}
+.lchip{display:block;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:3px 8px;font-family:"JetBrains Mono",monospace;font-size:13px;margin:3px 0}
+.outfile{background:#1d7a46;color:#fff;border-radius:10px;padding:10px;text-align:center;font-weight:600;opacity:0}
+.on .outfile{animation:pop .5s 2.2s forwards}
+.on .docmove{animation:slide 1.6s .3s forwards}
+@keyframes slide{0%{transform:none;opacity:1}70%{transform:translateX(120%);opacity:.6}100%{transform:translateX(150%);opacity:0}}
+@keyframes pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+.on .lchip.l1{animation:slide 1.1s .3s forwards}.on .lchip.l2{animation:slide 1.1s 1.9s forwards}.on .lchip.l3{animation:slide 1.1s 3.5s forwards}
+.outl{opacity:0}.on .outl.o1{animation:pop .4s 1.3s forwards}.on .outl.o2{animation:pop .4s 2.9s forwards}.on .outl.o3{animation:pop .4s 4.5s forwards}
+.analogy{font-size:14px;color:var(--mute);grid-column:1/-1;margin-top:4px}
+@media(max-width:600px){.on .docmove,.on .lchip{animation-name:slidev}@keyframes slidev{to{transform:translateY(40px);opacity:0}}}
+
+/* таймлайн */
+.tl{position:relative;padding-left:28px;display:grid;gap:10px}
+.tl::before{content:"";position:absolute;left:9px;top:4px;bottom:4px;width:3px;background:var(--line);border-radius:3px}
+.ev{position:relative;padding:8px 12px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
+.ev::before{content:"";position:absolute;left:-26px;top:14px;width:15px;height:15px;border-radius:50%;background:var(--pyb);border:3px solid var(--bg)}
+.ev.ua::before{background:var(--yel)}
+.ev .y{font-family:Rubik,Inter,Arial,sans-serif;font-weight:700;color:var(--mag);margin-right:8px}
+.ev small{color:var(--mute)}
+.tlgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px 18px}
+@media(max-width:700px){.tlgrid{grid-template-columns:minmax(0,1fr)}}
+
+/* мови/професії */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.lang{border-radius:12px;padding:12px;border:1px solid var(--line);background:var(--panel)}
+.lang b{font-family:Rubik,Inter,Arial,sans-serif;font-size:17px;display:block}
+.lang span{font-size:14px;color:var(--mute)}
+.lang.no{border-style:dashed;background:var(--soft)}
+.lang.no b{text-decoration:line-through;text-decoration-color:var(--mag)}
+.cmp{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px;margin-top:14px}
+@media(max-width:640px){.cmp{grid-template-columns:minmax(0,1fr)}}
+.prof{border-radius:12px;padding:12px;background:var(--soft)}
+.prof b{display:block;font-family:Rubik,Inter,Arial,sans-serif}
+.prof span{font-size:14px;color:var(--mute)}
+.prof.out{background:var(--mag-soft)}
+
+/* тести */
+.qhead{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:10px}
+.qdots{display:flex;gap:6px;flex-wrap:wrap}
+.qdots button{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--panel);font-weight:600}
+.qdots button.cur{border:2px solid var(--navy)}
+.qdots button.ok{background:var(--ok);color:#fff;border-color:var(--ok)}
+.qdots button.tried{background:var(--bad-soft);border-color:var(--bad)}
+.qtype{font-size:13px;font-weight:600;color:var(--pyb);text-transform:none}
+.qtext{font-family:Rubik,Inter,Arial,sans-serif;font-size:clamp(19px,2.4vw,23px);font-weight:500;margin:6px 0 14px;line-height:1.3}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;border:2px solid var(--line);background:var(--panel);border-radius:12px;padding:12px 14px;min-height:48px}
+.opt .mk{flex:none;width:22px;height:22px;border:2px solid var(--mute);border-radius:50%;margin-top:1px}
+.opt.multi .mk{border-radius:6px}
+.opt.sel{border-color:var(--navy);background:var(--soft)}
+.opt.sel .mk{background:var(--navy);border-color:var(--navy);box-shadow:inset 0 0 0 3px var(--panel)}
+.opt.good{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.match{display:grid;gap:8px}
+.mrow{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;align-items:center;padding:8px 10px;border-radius:12px;border:2px solid var(--line)}
+@media(max-width:560px){.mrow{grid-template-columns:minmax(0,1fr)}}
+.mrow b{font-family:Rubik,Inter,Arial,sans-serif}
+.mrow select{width:100%;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--panel);padding:8px;font-size:15px}
+.mrow.good{border-color:var(--ok);background:var(--ok-soft)}.mrow.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.fb{margin-top:14px;border-radius:14px;padding:14px 16px;display:none}
+.fb.show{display:block;animation:fade .3s}
+.fb.good{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb h4{margin:0 0 6px;font-family:Rubik,Inter,Arial,sans-serif;font-size:17px}
+.fb.good h4{color:var(--ok)}.fb.bad h4{color:var(--bad)}
+
+/* модальне вікно */
+.modal{position:fixed;inset:0;background:rgba(5,10,30,.6);z-index:60;display:none;align-items:flex-start;justify-content:center;padding:20px 10px;overflow-y:auto}
+.modal.show{display:flex}
+.modal-box{background:var(--bg);border-radius:20px;max-width:960px;width:100%;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.modal-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.modal-top b{font-family:Rubik,Inter,Arial,sans-serif;font-size:18px}
+
+/* вправи */
+.ex{border:1px solid var(--line);border-radius:18px;padding:clamp(16px,2.4vw,24px);margin:18px 0;background:var(--panel)}
+.ex-h{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline;justify-content:space-between}
+.ex-type{font-size:13px;font-weight:600;color:#fff;background:var(--pyb);border-radius:999px;padding:3px 10px}
+.ex-type.star{background:var(--mag)}
+.ex.done{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.hints{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.hint{display:none;margin-top:10px;background:light-dark(#fffbea,#1a1a10);border-left:4px solid var(--yel);border-radius:0 10px 10px 0;padding:10px 14px;font-size:15px}
+.hint.show{display:block;animation:fade .3s}
+.lines .ln{cursor:pointer}
+.lines .ln:hover{background:rgba(255,255,255,.08)}
+.lines .ln.pick{background:rgba(224,17,95,.45)}
+.sortlist{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.sortlist li{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;border:2px solid var(--line);background:var(--panel);touch-action:none}
+.sortlist li .grip{cursor:grab;color:var(--mute);font-size:20px;padding:0 4px;user-select:none}
+.sortlist li .txt{flex:1}
+.sortlist li.good{border-color:var(--ok);background:var(--ok-soft)}
+.sortlist li.wrong{border-color:var(--bad)}
+.mv{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--soft);font-size:16px}
+.sortable-ghost{opacity:.4}
+.pool{display:flex;flex-wrap:wrap;gap:8px;min-height:56px;padding:10px;border:2px dashed var(--line);border-radius:14px;margin-bottom:12px}
+.chip{border:2px solid var(--line);background:var(--panel);border-radius:999px;padding:8px 14px;font-weight:500;min-height:42px;touch-action:none}
+.chip.sel{border-color:var(--mag);background:var(--mag-soft)}
+.chip.good{border-color:var(--ok);background:var(--ok-soft)}.chip.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.buckets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media(max-width:700px){.buckets{grid-template-columns:minmax(0,1fr)}}
+.bucket{border:2px solid var(--line);border-radius:14px;padding:10px;min-height:130px;background:var(--soft);cursor:pointer}
+.bucket h4{margin:0 0 8px;font-family:Rubik,Inter,Arial,sans-serif;font-size:16px}
+.bucket .in{display:flex;flex-wrap:wrap;gap:6px;min-height:60px}
+.case{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;border:2px solid var(--line);margin-bottom:8px}
+@media(max-width:560px){.case{grid-template-columns:minmax(0,1fr)}}
+.case select{min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--panel);padding:8px;font-size:16px}
+.case.good{border-color:var(--ok);background:var(--ok-soft)}.case.wrong{border-color:var(--bad);background:var(--bad-soft)}
+textarea.ed{width:100%;min-height:110px;background:var(--code);color:#e8ecff;border-radius:12px;border:1px solid var(--line);padding:12px;font-family:"JetBrains Mono",monospace;font-size:16px;line-height:1.6;resize:vertical}
+.res{margin-top:12px;border-radius:12px;padding:10px 14px;display:none}
+.res.show{display:block}
+.res.good{background:var(--ok-soft);border:1px solid var(--ok)}.res.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+
+/* ДЗ */
+.konspekt{border:2px solid var(--navy);border-radius:18px;overflow:hidden}
+.konspekt .kh{background:var(--navy);color:#fff;padding:12px 18px;font-family:Rubik,Inter,Arial,sans-serif;font-weight:600;font-size:19px}
+.kgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0}
+@media(max-width:700px){.kgrid{grid-template-columns:minmax(0,1fr)}}
+.kc{padding:14px 18px;border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
+.kc h4{margin:0 0 6px;font-family:Rubik,Inter,Arial,sans-serif;color:var(--pyb);font-size:16px}
+.kc p,.kc li{font-size:15px}
+.kc ul{margin:0;padding-left:1.1em}
+.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.stat div{background:var(--soft);border-radius:14px;padding:12px 14px}
+.stat b{display:block;font-family:Rubik,Inter,Arial,sans-serif;font-size:28px;color:var(--mag)}
+.crit li{margin:.2em 0}
+table.ex-t{border-collapse:collapse;width:100%;font-size:15px}
+table.ex-t td{border:1px solid var(--line);padding:6px 10px;vertical-align:top}
+table.ex-t td:first-child{font-weight:600;width:38%}
+.dlg{position:fixed;inset:0;background:rgba(5,10,30,.55);z-index:70;display:none;align-items:center;justify-content:center;padding:16px}
+.dlg.show{display:flex}
+.dlg>div{background:var(--bg);border-radius:18px;padding:22px;max-width:420px;width:100%}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:12px;z-index:80;opacity:0;transition:.3s;pointer-events:none}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media print{.top,.nav-bottom,.btn,.stage:not(#st-dz){display:none!important}#st-dz{display:block!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">Інформатика · 7 клас · <b>Алгоритми та програми</b></div>
+    <label class="sr" for="lessonSel" style="position:absolute;left:-9999px">Урок</label>
+    <select id="lessonSel" class="tbtn" aria-label="Перейти до уроку"></select>
+    <button class="tbtn" id="btnRestart" type="button">Урок з початку</button>
+  </div>
+  <nav class="steps" id="stepsNav" aria-label="Етапи уроку"></nav>
+</header>
+
+<main>
+
+<!-- 1. ВІТАННЯ -->
+<section class="stage" id="st-vitannia">
+  <div class="hero">
+    <div>
+      <div class="kicker">Урок 1 · Алгоритми та програми</div>
+      <h1>Програма. Мови програмування. Професії, де потрібно вміти програмувати</h1>
+      <p class="lead">Привіт! Щодня ти користуєшся десятками програм: месенджером, іграми, навігатором, камерою в телефоні. Кожну з них хтось написав — рядок за рядком. Сьогодні ти дізнаєшся, якими мовами «розмовляють» із комп’ютером, і зробиш перший крок від блоків Scratch до справжнього коду.</p>
+      <div class="row"><button class="btn pri" data-go="1" type="button">Почати урок</button></div>
+    </div>
+    <svg viewBox="0 0 520 320" role="img" aria-label="Блоки Scratch перетворюються на код Python">
+      <rect x="10" y="40" width="250" height="40" rx="18" fill="#ffbf00"/><text x="24" y="65" font-family="Inter, Arial, sans-serif" font-weight="600" font-size="14" fill="#4a3500">коли прапорець натиснуто</text>
+      <rect x="10" y="84" width="250" height="40" rx="6" fill="#9966ff"/><text x="24" y="109" font-family="Inter, Arial, sans-serif" font-weight="600" font-size="14" fill="#fff">говорити Привіт!</text>
+      <rect x="10" y="128" width="250" height="40" rx="6" fill="#4c97ff"/><text x="24" y="153" font-family="Inter, Arial, sans-serif" font-weight="600" font-size="14" fill="#fff">перемістити на 10 кроків</text>
+      <rect x="10" y="172" width="250" height="40" rx="6" fill="#ffab19"/><text x="24" y="197" font-family="Inter, Arial, sans-serif" font-weight="600" font-size="14" fill="#4a3000">чекати 1 секунд</text>
+      <path d="M270 130 H 308" stroke="#e0115f" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M300 118 L 314 130 L 300 142" stroke="#e0115f" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="322" y="30" width="190" height="210" rx="14" fill="#0f1730"/>
+      <rect x="322" y="30" width="190" height="28" rx="14" fill="#3776ab"/>
+      <circle cx="340" cy="44" r="5" fill="#ff6b6b"/><circle cx="356" cy="44" r="5" fill="#ffd43b"/><circle cx="372" cy="44" r="5" fill="#43d18d"/>
+      <text x="336" y="88" font-family="JetBrains Mono, monospace" font-size="13" fill="#ffd43b">print<tspan fill="#ff9fc4">(</tspan><tspan fill="#9ee6a8">"Привіт!"</tspan><tspan fill="#ff9fc4">)</tspan></text>
+      <text x="336" y="114" font-family="JetBrains Mono, monospace" font-size="13" fill="#e8ecff">x <tspan fill="#ff9fc4">=</tspan> x <tspan fill="#ff9fc4">+</tspan> 10</text>
+      <text x="336" y="140" font-family="JetBrains Mono, monospace" font-size="13" fill="#ffd43b">sleep<tspan fill="#ff9fc4">(</tspan><tspan fill="#e8ecff">1</tspan><tspan fill="#ff9fc4">)</tspan></text>
+      <text x="336" y="180" font-family="JetBrains Mono, monospace" font-size="12" fill="#7f8bb5"># 0110 1001 0101</text>
+      <text x="336" y="204" font-family="JetBrains Mono, monospace" font-size="12" fill="#7f8bb5"># 1011 0000 0110</text>
+      <rect x="10" y="250" width="502" height="56" rx="14" fill="#eef2fb" stroke="#d6dcef"/>
+      <text x="261" y="284" text-anchor="middle" font-family="Rubik, Arial, sans-serif" font-weight="600" font-size="16" fill="#0b1f4b">Алгоритм → Програма → Комп’ютер виконує</text>
+    </svg>
+  </div>
+
+  <div class="panel">
+    <h3>Після цього уроку ти зможеш</h3>
+    <ul class="goals">
+      <li>пояснити, що таке комп’ютерна програма і мова програмування;</li>
+      <li>назвати складові мови програмування й відрізнити мови низького та високого рівня;</li>
+      <li>розповісти, як працюють компілятор та інтерпретатор;</li>
+      <li>назвати кілька сучасних мов і професій, де потрібно вміти програмувати.</li>
+    </ul>
+    <h3 style="margin-top:14px">План уроку (≈ 45 хв)</h3>
+    <div class="plan" id="planList"></div>
+    <p style="margin-top:12px;color:var(--mute);font-size:14px">Можеш вільно переходити між етапами вгорі. Твій прогрес запам’ятовується в цьому браузері.</p>
+  </div>
+  <div class="nav-bottom"><span></span><button class="btn pri" data-go="1" type="button">Далі: новий розділ →</button></div>
+</section>
+
+<!-- 2. ОГЛЯД РОЗДІЛУ -->
+<section class="stage" id="st-rozdil">
+  <div class="kicker">Новий розділ</div>
+  <h2>Алгоритми та програми. Частина 1</h2>
+  <p class="lead">У 6 класі ти складав алгоритми з блоків у Scratch. Тепер ті самі ідеї — команди, розгалуження, підпрограми — ти записуватимеш текстом мовою Python. Ось що на тебе чекає:</p>
+  <div class="lessons" id="lessonCards"></div>
+  <div class="panel">
+    <h3>Що зміниться порівняно зі Scratch</h3>
+    <div class="grid2">
+      <div class="soft"><b>Scratch</b><p style="margin:.3em 0 0">Команди — кольорові блоки. Їх перетягують мишкою, і помилитися в записі майже неможливо.</p></div>
+      <div class="soft"><b>Python</b><p style="margin:.3em 0 0">Команди пишуть текстом за суворими правилами. Пропущена дужка — і програма не запуститься. Зате можна створити що завгодно: від чат-бота до гри.</p></div>
+    </div>
+  </div>
+  <div class="nav-bottom"><button class="btn" data-go="0" type="button">← Назад</button><button class="btn pri" data-go="2" type="button">Далі: розминка →</button></div>
+</section>
+
+<!-- 3. АКТУАЛІЗАЦІЯ -->
+<section class="stage" id="st-aktual">
+  <div class="kicker">Актуалізація · Проблемна ситуація</div>
+  <h2>Робот-кухар не розуміє рецепт</h2>
+  <p class="lead">Тато написав для робота-кухаря рецепт звичайною людською мовою. Запусти робота й подивись, що станеться. Знайди та виправ команди, які він не може виконати.</p>
+  <div class="kitchen panel">
+    <div class="robot-wrap">
+      <div class="bubble" id="rBubble">Я готовий! Натисни «Запустити робота».</div>
+      <svg class="robot" id="robot" viewBox="0 0 200 220" aria-hidden="true">
+        <line x1="100" y1="10" x2="100" y2="34" stroke="#55608a" stroke-width="4"/><circle cx="100" cy="10" r="7" fill="#e0115f"/>
+        <rect x="45" y="34" width="110" height="80" rx="20" fill="#3776ab"/>
+        <rect x="60" y="52" width="80" height="44" rx="12" fill="#0b1f4b"/>
+        <circle id="eyeL" cx="82" cy="74" r="8" fill="#ffd43b"/><circle id="eyeR" cx="118" cy="74" r="8" fill="#ffd43b"/>
+        <rect x="55" y="120" width="90" height="70" rx="16" fill="#4c97ff"/>
+        <rect x="80" y="138" width="40" height="26" rx="6" fill="#ffd43b"/>
+        <rect x="22" y="126" width="28" height="12" rx="6" fill="#3776ab"/><rect x="150" y="126" width="28" height="12" rx="6" fill="#3776ab"/>
+        <rect x="68" y="190" width="18" height="24" rx="6" fill="#0b1f4b"/><rect x="114" y="190" width="18" height="24" rx="6" fill="#0b1f4b"/>
+      </svg>
+    </div>
+    <div>
+      <h3>Рецепт «Варена картопля»</h3>
+      <ol class="recipe" id="recipe"></ol>
+      <div class="row" style="margin-top:10px"><button class="btn blue" id="rRun" type="button">Запустити робота</button></div>
+      <div id="rFix" style="display:none;margin-top:14px" class="soft"></div>
+    </div>
+  </div>
+  <div class="panel" id="rConclusion" style="display:none">
+    <h3>Що ми з’ясували</h3>
+    <p>Комп’ютер, як і робот, не здогадується. Йому потрібні <b>точні й однозначні</b> команди, записані за суворими правилами. Слова «трохи», «до готовності», «як слід» він не розуміє.</p>
+    <p><b>Згадай Scratch:</b> чому спрайт ніколи не перепитував, що означає блок «перемістити на 10 кроків»?</p>
+    <button class="btn" id="rReveal" type="button">Перевірити свою думку</button>
+    <p id="rAnswer" style="display:none;margin-top:10px" class="soft">Бо кожен блок Scratch має одне точне значення і числові параметри: 10 кроків, 1 секунда. Набір таких точних правил і є <b>мовою програмування</b>. Сьогодні дізнаємось, які бувають мови і як комп’ютер їх розуміє.</p>
+  </div>
+  <div class="nav-bottom"><button class="btn" data-go="1" type="button">← Назад</button><button class="btn pri" data-go="3" type="button">Далі: теорія →</button></div>
+</section>
+
+<!-- 4. ТЕОРІЯ -->
+<section class="stage" id="st-teoria">
+  <div class="kicker">Теорія · анімоване пояснення</div>
+  <h2>Як людина «розмовляє» з комп’ютером</h2>
+  <p style="color:var(--mute)">Кожен крок показується поступово. Читай текст у жовтому рядку внизу або увімкни озвучку. Будь-який крок можна повторити.</p>
+  <div id="mainPlayer"></div>
+  <div class="nav-bottom"><button class="btn" data-go="2" type="button">← Назад</button><button class="btn pri" data-go="4" type="button">Далі: перевір себе →</button></div>
+</section>
+
+<!-- 5. ТЕСТИ -->
+<section class="stage" id="st-testy">
+  <div class="kicker">Перевірка розуміння</div>
+  <h2>Тест із поверненням до теорії</h2>
+  <p style="color:var(--mute)">Якщо помилишся, тобі покажуть, що саме не так, і запропонують переглянути потрібний крок теорії. Потім спробуй ще раз.</p>
+  <div class="panel" id="quiz"></div>
+  <div class="nav-bottom"><button class="btn" data-go="3" type="button">← Назад</button><button class="btn pri" data-go="5" type="button">Далі: закріплення →</button></div>
+</section>
+
+<!-- 6. ЗАКРІПЛЕННЯ -->
+<section class="stage" id="st-vpravy">
+  <div class="kicker">Закріплення</div>
+  <h2>Інтерактивні вправи</h2>
+  <p style="color:var(--mute)">Чотири вправи різних типів і одна необов’язкова «із зірочкою». Якщо застряг, відкрий підказку: спочатку першу, потім другу.</p>
+  <div id="exercises"></div>
+  <div class="nav-bottom"><button class="btn" data-go="4" type="button">← Назад</button><button class="btn pri" data-go="6" type="button">Далі: домашнє завдання →</button></div>
+</section>
+
+<!-- 7. ДЗ -->
+<section class="stage" id="st-dz">
+  <div class="kicker">Домашнє завдання і місток до наступного уроку</div>
+  <h2>Опорний конспект і завдання</h2>
+
+  <div class="konspekt" id="konspekt">
+    <div class="kh">Опорний конспект · Урок 1</div>
+    <div class="kgrid">
+      <div class="kc"><h4>Програма</h4><p>Комп’ютерна програма — це алгоритм опрацювання даних, записаний мовою програмування і призначений для виконання комп’ютером.</p></div>
+      <div class="kc"><h4>Мова програмування</h4><p>Формальна (штучна) мова для запису програм. Кожна команда має одне точне значення.</p><p><b>Складові:</b> алфавіт (символи) → словник (службові слова) → синтаксис (правила запису) → семантика (зміст команд).</p></div>
+      <div class="kc"><h4>Рівні мов</h4><ul><li><b>Низького рівня</b> — близькі до процесора: машинний код (0 і 1), асемблер.</li><li><b>Високого рівня</b> — близькі до людської мови: Python, Java, JavaScript, C++, Scratch.</li></ul></div>
+      <div class="kc"><h4>Транслятори</h4><p>Транслятор перекладає програму з мови високого рівня в машинний код.</p><ul><li><b>Компілятор</b> перекладає всю програму і створює готовий файл. Як перекладач книжки.</li><li><b>Інтерпретатор</b> перекладає й одразу виконує по одній команді та зупиняється на помилці. Як синхронний перекладач. Python — інтерпретована мова.</li></ul></div>
+      <div class="kc"><h4>Віхи історії</h4><ul><li>1843 — Ада Лавлейс, перша програма</li><li>1955 — Катерина Ющенко, Адресна мова (Київ)</li><li>1957 Fortran · 1970 Pascal · 1972 C</li><li>1991 Python · 1995 Java, JavaScript · 2007 Scratch</li></ul></div>
+      <div class="kc"><h4>Сучасні мови та професії</h4><p>Python — ШІ й дані · JavaScript — вебсайти · Kotlin/Java — Android · Swift — iPhone · C++ — швидкі програми, рушії ігор · C# — ігри на Unity · SQL — бази даних. HTML і CSS — мови розмітки, а не програмування.</p><p>Розробник, тестувальник, аналітик даних, інженер ШІ, розробник ігор… і науковці, інженери, дизайнери.</p></div>
+    </div>
+  </div>
+  <div class="row" style="margin-top:12px"><button class="btn" id="btnCopyK" type="button">Скопіювати конспект</button><button class="btn" id="btnPrintK" type="button">Надрукувати конспект</button></div>
+
+  <div class="panel">
+    <h3>Як працювати з конспектом удома (≈ 10 хв)</h3>
+    <ol>
+      <li>Прочитай конспект двічі: спочатку повністю, потім по блоках.</li>
+      <li>Закрий його і по пам’яті намалюй у зошиті дві схеми: «Рівні мов» (сходинки від 0 і 1 до Python) і «Компілятор та інтерпретатор».</li>
+      <li>Звір свої схеми з конспектом і доповни те, що пропустив, іншим кольором.</li>
+      <li>Дай усні відповіді на запитання для самоперевірки:
+        <ul><li>Чому для комп’ютера не підходить звичайна людська мова?</li><li>Чим компілятор відрізняється від інтерпретатора?</li><li>Назви дві мови високого рівня й одну мову низького рівня.</li></ul></li>
+    </ol>
+  </div>
+
+  <div class="panel">
+    <h3>Практичне завдання: «Паспорт мови програмування»</h3>
+    <p>Обери <b>одну</b> мову, про яку ми <b>не</b> говорили на уроці: <b>Go, Rust, Kotlin, Ruby, PHP, Lua</b> або <b>TypeScript</b>. Знайди інформацію в інтернеті та заповни паспорт у зошиті або в документі.</p>
+    <p><b>Поля паспорта:</b></p>
+    <ol><li>Назва мови</li><li>Рік появи</li><li>Автор або компанія</li><li>Як перекладається: компілятор чи інтерпретатор</li><li>Де використовують (2 приклади)</li><li>Як виглядає програма «Привіт, світе!» цією мовою</li><li>Одна професія, де ця мова потрібна</li><li>Джерело інформації (посилання)</li></ol>
+    <p><b>Приклад</b> (для мови з уроку):</p>
+    <table class="ex-t">
+      <tr><td>Назва мови</td><td>Python</td></tr>
+      <tr><td>Рік появи</td><td>1991</td></tr>
+      <tr><td>Автор</td><td>Гвідо ван Россум (Нідерланди)</td></tr>
+      <tr><td>Переклад</td><td>Інтерпретатор</td></tr>
+      <tr><td>Де використовують</td><td>Штучний інтелект; аналіз даних</td></tr>
+      <tr><td>«Привіт, світе!»</td><td><code>print("Привіт, світе!")</code></td></tr>
+      <tr><td>Професія</td><td>Аналітик даних</td></tr>
+      <tr><td>Джерело</td><td>python.org</td></tr>
+    </table>
+    <p style="margin-top:12px"><b>Критерії виконання:</b></p>
+    <ul class="crit"><li>заповнено всі 8 полів;</li><li>приклад коду переписано точно, з усіма дужками й лапками;</li><li>поле «Де використовують» написано своїми словами;</li><li>правильно визначено спосіб перекладу (компілятор чи інтерпретатор).</li></ul>
+    <p class="soft" style="margin-top:10px">На початку наступного уроку ти перевіриш свій паспорт за контрольними запитаннями і побачиш типові помилки.</p>
+  </div>
+
+  <div class="panel" style="border-color:var(--pyb)">
+    <h3>Місток до уроку 2</h3>
+    <p>Програму треба десь написати, зберегти й запустити. У Scratch для цього було вікно з блоками і сценою. А де пишуть код на Python? Наступного уроку ти познайомишся із середовищами <b>IDLE</b>, <b>Thonny</b> та онлайн-середовищем <b>pythonny.pp.ua</b> і запустиш свою першу програму.</p>
+    <p><b>Подумай до уроку:</b> що, на твою думку, має вміти «зручне місце для написання програм»? Запиши 2–3 ідеї.</p>
+  </div>
+
+  <div class="panel" id="finish" style="border:2px solid var(--mag)">
+    <h2>Урок завершено!</h2>
+    <div class="stat" id="stats"></div>
+    <div class="row">
+      <button class="btn" id="btnRestart2" type="button">Пройти урок ще раз</button>
+      <a class="btn blue" href="../../index.html#s-7--python" style="text-decoration:none;display:inline-grid;place-items:center">До меню розділу</a>
+      <a class="btn pri" id="nextLesson" href="urok-2.html" style="text-decoration:none;display:inline-grid;place-items:center">Наступний урок →</a>
+    </div>
+  </div>
+  <div class="nav-bottom"><button class="btn" data-go="5" type="button">← Назад</button><button class="btn" data-go="0" type="button">На початок уроку</button></div>
+</section>
+</main>
+
+<!-- модальне вікно теорії -->
+<div class="modal" id="thModal" role="dialog" aria-modal="true" aria-label="Повторення теорії">
+  <div class="modal-box">
+    <div class="modal-top"><b>Повторюємо теорію</b><button class="btn pri" id="thClose" type="button">Повернутися до питання</button></div>
+    <div id="modalPlayer"></div>
+  </div>
+</div>
+<div class="dlg" id="dlg"><div><h3>Почати урок з початку?</h3><p>Твій прогрес у цьому уроці буде скинуто.</p><div class="row"><button class="btn pri" id="dlgYes" type="button">Так, почати знову</button><button class="btn" id="dlgNo" type="button">Скасувати</button></div></div></div>
+<div class="toast" id="toast"></div>
+
+<!-- ======== КРОКИ ТЕОРІЇ (шаблони) ======== -->
+<template id="ts0">
+  <div class="duo">
+    <div class="b" data-b="1"><div class="caption-tag">Алгоритм у Scratch</div>
+      <div class="stack"><span class="sb sb-ev">коли прапорець натиснуто</span><span class="sb sb-lk">говорити <i>Привіт!</i></span></div></div>
+    <div class="arr b" data-b="2">→</div>
+    <div class="b" data-b="2"><div class="caption-tag">Той самий алгоритм мовою Python</div>
+      <div class="codebox"><span data-type>print("Привіт!")</span></div></div>
+  </div>
+  <div class="def b" data-b="3"><b>Комп’ютерна програма</b> — це алгоритм опрацювання даних, записаний мовою програмування і призначений для виконання комп’ютером.</div>
+  <div class="row b" data-b="4" style="margin-top:14px;gap:8px"><span class="soft"><b>Алгоритм</b> — що робити</span><span class="arr" style="font-size:22px">+</span><span class="soft"><b>Мова програмування</b> — як записати</span><span class="arr" style="font-size:22px">=</span><span class="soft" style="background:var(--mag-soft)"><b>Програма</b></span></div>
+</template>
+
+<template id="ts1">
+  <div class="phrase b" data-b="1">«Візьми ключ»</div>
+  <div class="meanings">
+    <div class="meaning b" data-b="2"><svg viewBox="0 0 60 60"><circle cx="18" cy="30" r="12" fill="none" stroke="#3776ab" stroke-width="5"/><path d="M30 30h24M46 30v9M53 30v7" stroke="#3776ab" stroke-width="5" stroke-linecap="round"/></svg>ключ від дверей</div>
+    <div class="meaning b" data-b="2"><svg viewBox="0 0 60 60"><path d="M30 54c-8 0-10-8-4-10s9 4 4 8M30 52V8c8 4 8 14 0 20-8 6-12 12-8 18s14 4 14-4-10-8-14-4" fill="none" stroke="#9966ff" stroke-width="4" stroke-linecap="round"/></svg>скрипковий ключ</div>
+    <div class="meaning b" data-b="2"><svg viewBox="0 0 60 60"><path d="M10 44c8-6 14 6 22 0s14 6 20 0" stroke="#4c97ff" stroke-width="4" fill="none"/><path d="M30 14c-6 9-9 14-9 19a9 9 0 0 0 18 0c0-5-3-10-9-19z" fill="#4c97ff"/></svg>ключ — джерело води</div>
+  </div>
+  <div class="def b" data-b="3">Людська мова <b>неоднозначна</b>: одне слово може мати кілька значень, і ми здогадуємось за змістом. Комп’ютер здогадуватися не вміє.</div>
+  <div class="def b" data-b="4" style="border-color:var(--pyb);background:light-dark(#e9f2fb,#10284a)"><b>Мова програмування</b> — це формальна (штучна) мова для запису програм. У ній кожна команда має <b>одне точне значення</b>.</div>
+</template>
+
+<template id="ts2">
+  <div class="codebox" style="font-size:clamp(18px,3vw,26px);text-align:center"><span class="k" data-h="2,3">print</span><span class="p" data-h="2,4">(</span><span class="s"><span data-h="2,4">"</span><span data-h="2">Привіт!</span><span data-h="2,4">"</span></span><span class="p" data-h="2,4">)</span></div>
+  <div class="parts">
+    <div class="part b" data-b="2"><b>Алфавіт</b>Символи, якими можна писати: літери, цифри, знаки <code>( ) " + =</code></div>
+    <div class="part b" data-b="3"><b>Словник</b>Службові слова з наперед визначеним значенням, наприклад <code>print</code></div>
+    <div class="part b" data-b="4"><b>Синтаксис</b>Правила запису: після <code>print</code> — дужки, текст — у лапках</div>
+    <div class="part b" data-b="5"><b>Семантика</b>Зміст команди: вивести на екран текст у дужках</div>
+  </div>
+  <div class="b" data-b="5" style="margin-top:12px"><div class="caption-tag">Результат виконання</div><div class="console">Привіт!</div></div>
+  <div class="def b" data-b="6">Як у рідній мові: <b>літери → слова → правила речення → зміст</b>.</div>
+</template>
+
+<template id="ts3">
+  <div class="cpu b" data-b="1"><svg viewBox="0 0 64 64"><rect x="14" y="14" width="36" height="36" rx="5" fill="#0b1f4b"/><text x="32" y="37" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#ffd43b">0101</text><g stroke="#55608a" stroke-width="3"><path d="M22 4v10M32 4v10M42 4v10M22 50v10M32 50v10M42 50v10M4 22h10M4 32h10M4 42h10M50 22h10M50 32h10M50 42h10"/></g></svg>Процесор розуміє лише 0 і 1</div>
+  <div class="ladder" style="margin-top:14px">
+    <div class="rung hi b" data-b="4"><span class="lv">Мова високого рівня <span class="tag hi">Python</span></span><span class="mono">x = 97</span></div>
+    <div class="rung lo b" data-b="3"><span class="lv">Асемблер</span><span class="mono">MOV AL, 61h</span></div>
+    <div class="rung lo b" data-b="2"><span class="lv">Машинний код</span><span class="mono">10110000 01100001</span></div>
+  </div>
+  <div class="grid2 b" data-b="5" style="margin-top:14px">
+    <div class="soft"><b>Мови низького рівня</b><br>Близькі до «мови» процесора. Програми швидкі, але писати їх довго й важко.</div>
+    <div class="soft" style="background:light-dark(#e9f2fb,#10284a)"><b>Мови високого рівня</b><br>Близькі до людської мови: Python, Java, JavaScript, C++, Scratch. Писати легко, а переклад для процесора бере на себе спеціальна програма.</div>
+  </div>
+</template>
+
+<template id="ts4">
+  <div class="def b" data-b="1" style="margin-top:0"><b>Транслятор</b> — програма, яка перекладає текст програми з мови високого рівня в машинний код.</div>
+  <div class="lane b" data-b="2" style="margin-top:14px">
+    <h4>Компілятор</h4>
+    <div class="doc docmove">print("Раз")<br>print("Два")<br>print("Три")</div>
+    <div class="tbox">Компілятор<small>перекладає все</small></div>
+    <div class="outfile">program.exe<br><small style="font-weight:400">готовий файл</small></div>
+    <div class="analogy">Як перекладач книжки: спершу перекладає всю книжку, а потім ти читаєш готовий переклад.</div>
+  </div>
+  <div class="lane b" data-b="3">
+    <h4>Інтерпретатор</h4>
+    <div><span class="lchip l1">print("Раз")</span><span class="lchip l2">print("Два")</span><span class="lchip l3">print("Три")</span></div>
+    <div class="tbox">Інтерпретатор<small>по одній команді</small></div>
+    <div class="console" style="min-height:84px"><span class="outl o1">Раз</span><br><span class="outl o2">Два</span><br><span class="outl o3">Три</span></div>
+    <div class="analogy">Як синхронний перекладач: перекладає кожне речення одразу, як тільки воно прозвучало.</div>
+  </div>
+  <div class="def b" data-b="4" style="border-color:var(--pyb);background:light-dark(#e9f2fb,#10284a)"><b>Python</b> — інтерпретована мова: команди перекладаються й виконуються одна за одною.</div>
+</template>
+
+<template id="ts5">
+  <div class="grid2">
+    <div><div class="caption-tag">Програма</div>
+      <div class="codebox"><span class="ln"><span class="k">print</span><span class="p">(</span><span class="s">"Раз"</span><span class="p">)</span></span><span class="ln"><span class="k">print</span><span class="p">(</span><span class="s">"Два"</span><span class="p">)</span></span><span class="ln lnerr"><span class="k">prnt</span><span class="p">(</span><span class="s">"Три"</span><span class="p">)</span></span><span class="ln lnskip"><span class="k">print</span><span class="p">(</span><span class="s">"Чотири"</span><span class="p">)</span></span></div></div>
+    <div><div class="caption-tag">Що бачить користувач</div>
+      <div class="console" style="min-height:150px"><span class="b" data-b="1">Раз</span>
+<span class="b" data-b="2">Два</span>
+<span class="b e" data-b="3">Помилка в рядку 3:
+NameError: name 'prnt' is not defined.
+Did you mean: 'print'?</span></div></div>
+  </div>
+  <div class="def b" data-b="4">Інтерпретатор виконує команди <b>по черзі</b> і <b>зупиняється на першій помилці</b>. Рядок 4 так і не виконався. Помилку треба знайти, виправити (<code>prnt</code> → <code>print</code>) і запустити програму знову.</div>
+</template>
+
+<template id="ts6">
+  <div class="tlgrid">
+    <div class="tl">
+      <div class="ev b" data-b="1"><span class="y">1843</span><b>Ада Лавлейс</b><br><small>Склала першу у світі програму — для механічної «аналітичної машини» Чарльза Беббіджа.</small></div>
+      <div class="ev ua b" data-b="2"><span class="y">1955</span><b>Катерина Ющенко</b><br><small>Українська вчена створила в Києві Адресну мову програмування — одну з перших мов високого рівня у світі.</small></div>
+      <div class="ev b" data-b="3"><span class="y">1957</span><b>Fortran</b><br><small>Перша широко поширена мова високого рівня, для наукових обчислень.</small></div>
+      <div class="ev b" data-b="3"><span class="y">1964</span><b>BASIC</b><br><small>Мова для навчання програмування.</small></div>
+    </div>
+    <div class="tl">
+      <div class="ev b" data-b="3"><span class="y">1970</span><b>Pascal</b><br><small>Ніклаус Вірт створив мову для навчання програмування.</small></div>
+      <div class="ev b" data-b="3"><span class="y">1972</span><b>C</b><br><small>Нею написано багато операційних систем.</small></div>
+      <div class="ev b" data-b="4"><span class="y">1991</span><b>Python</b><br><small>Гвідо ван Россум. Назву взято від комедійного шоу «Monty Python», а не від змії.</small></div>
+      <div class="ev b" data-b="4"><span class="y">1995</span><b>Java і JavaScript</b><br><small>Дві різні мови з подібними назвами.</small></div>
+      <div class="ev b" data-b="5"><span class="y">2007</span><b>Scratch</b><br><small>Блокова мова, з якою ти працював у 6 класі.</small></div>
+    </div>
+  </div>
+</template>
+
+<template id="ts7">
+  <div class="cards">
+    <div class="lang b" data-b="1"><b>Python</b><span>Штучний інтелект, аналіз даних, наука, автоматизація, боти</span></div>
+    <div class="lang b" data-b="1"><b>JavaScript</b><span>Інтерактивні вебсайти та вебзастосунки</span></div>
+    <div class="lang b" data-b="1"><b>Kotlin, Java</b><span>Застосунки для Android</span></div>
+    <div class="lang b" data-b="1"><b>Swift</b><span>Застосунки для iPhone та iPad</span></div>
+    <div class="lang b" data-b="2"><b>C++</b><span>Швидкі програми, ігрові рушії, драйвери</span></div>
+    <div class="lang b" data-b="2"><b>C#</b><span>Ігри на рушії Unity, програми для Windows</span></div>
+    <div class="lang b" data-b="2"><b>SQL</b><span>Запити до баз даних</span></div>
+    <div class="lang no b" data-b="3"><b>HTML, CSS</b><span>Мови розмітки та стилів: описують сторінку, але алгоритмів не містять. Це не мови програмування.</span></div>
+  </div>
+  <div class="cmp b" data-b="4">
+    <div><div class="caption-tag">«Привіт!» мовою C++</div><div class="codebox"><span class="c">#include</span> &lt;iostream&gt;
+<span class="k">int</span> main() {
+    std::cout &lt;&lt; <span class="s">"Привіт!"</span>;
+    <span class="k">return</span> 0;
+}</div></div>
+    <div><div class="caption-tag">«Привіт!» мовою Python</div><div class="codebox"><span class="k">print</span><span class="p">(</span><span class="s">"Привіт!"</span><span class="p">)</span></div><p style="margin-top:8px;font-size:15px">Один рядок замість п’яти. Тому вчитися починаємо з Python.</p></div>
+  </div>
+</template>
+
+<template id="ts8">
+  <div class="cards">
+    <div class="prof b" data-b="1"><b>Розробник програм</b><span>Створює програми й застосунки</span></div>
+    <div class="prof b" data-b="1"><b>Веброзробник</b><span>Робить сайти та онлайн-сервіси</span></div>
+    <div class="prof b" data-b="1"><b>Розробник ігор</b><span>Програмує ігрову логіку, персонажів, рівні</span></div>
+    <div class="prof b" data-b="1"><b>Мобільний розробник</b><span>Пише застосунки для телефонів</span></div>
+    <div class="prof b" data-b="2"><b>Тестувальник (QA)</b><span>Шукає помилки, пише автотести</span></div>
+    <div class="prof b" data-b="2"><b>Аналітик даних</b><span>Знаходить закономірності в даних</span></div>
+    <div class="prof b" data-b="2"><b>Інженер ШІ</b><span>Навчає нейромережі</span></div>
+    <div class="prof b" data-b="2"><b>Інженер з кібербезпеки</b><span>Захищає системи від атак</span></div>
+    <div class="prof out b" data-b="3"><b>Науковець</b><span>Моделює клімат, космос, ліки</span></div>
+    <div class="prof out b" data-b="3"><b>Інженер-конструктор</b><span>Програмує роботів і дрони</span></div>
+    <div class="prof out b" data-b="3"><b>Дизайнер, аніматор</b><span>Автоматизує графіку й ефекти</span></div>
+    <div class="prof out b" data-b="3"><b>Агроном</b><span>Аналізує поля за даними з дронів</span></div>
+  </div>
+  <div class="def b" data-b="4">Уміння програмувати — як уміння писати: воно стане в пригоді в будь-якій професії.</div>
+</template>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<script>
+{
+/* ================== ДАНІ ================== */
+const LESSON_KEY='inf7-alg1-u1';const CUR=1;
+const LESSONS=[
+ {n:1,t:'Програма. Мови програмування. Професії',d:'Що таке програма, які бувають мови, як комп’ютер їх розуміє',ready:true},
+ {n:2,t:'Середовища: IDLE, Thonny, pythonny.pp.ua',d:'Де писати, зберігати й запускати програми на Python',ready:true},
+ {n:3,t:'print(), змінні, присвоювання',d:'Виведення даних, змінні, введення з клавіатури',ready:false},
+ {n:4,t:'Арифметичні обчислення',d:'Математичні операції та пріоритет дій',ready:false},
+ {n:5,t:'Розгалуження',d:'if, else, elif: програма приймає рішення',ready:false},
+ {n:6,t:'Підпрограми',d:'Власні функції з аргументами та результатами',ready:false},
+ {n:'ПР',t:'Підсумкова практична робота',d:'Завдання на оцінку з надсиланням результату вчителю',ready:false,href:'praktychna.html'}
+];
+const STAGES=[
+ {id:'vitannia',t:'Вітання',min:2},{id:'rozdil',t:'Новий розділ',min:2},{id:'aktual',t:'Актуалізація',min:4},
+ {id:'teoria',t:'Теорія',min:13},{id:'testy',t:'Тести',min:8},{id:'vpravy',t:'Закріплення',min:13},{id:'dz',t:'Домашнє завдання',min:3}
+];
+const THEORY=[
+ {t:'Від алгоритму до програми',caps:[
+  'Згадай Scratch. Щоб спрайт привітався, ти складав алгоритм із блоків: «коли прапорець натиснуто» і «говорити Привіт!».',
+  'Той самий алгоритм можна записати текстом. Мовою Python це один рядок: print, дужки, а в лапках — слово «Привіт!».',
+  'Алгоритм, записаний мовою, зрозумілою комп’ютеру, називають програмою. Комп’ютерна програма — це алгоритм опрацювання даних, записаний мовою програмування і призначений для виконання комп’ютером.',
+  'Отже: алгоритм пояснює, що робити, мова програмування — як це записати. Разом вони дають програму.']},
+ {t:'Навіщо потрібна особлива мова',caps:[
+  'Уяви, що тобі кажуть: «Візьми ключ».',
+  'Який саме? Ключ від дверей, скрипковий ключ у нотах чи ключ — джерело води? Людина зрозуміє за змістом розмови.',
+  'Людська мова неоднозначна: одне слово може мати кілька значень. А комп’ютер здогадуватися не вміє — як наш робот-кухар.',
+  'Тому для комп’ютера придумали мови програмування. Мова програмування — це формальна, штучна мова, у якій кожна команда має одне точне значення.']},
+ {t:'Складові мови програмування',caps:[
+  'Розгляньмо один рядок програми на Python. Як і в рідній мові, у мові програмування є кілька складових.',
+  'Алфавіт — це символи, якими можна записувати програму: літери, цифри, дужки, лапки, знаки дій.',
+  'Словник — це службові слова з наперед визначеним значенням. Слово print означає «вивести на екран».',
+  'Синтаксис — це правила запису. Після print обов’язково ставлять дужки, а текст беруть у лапки. Порушиш правило — програма не запуститься.',
+  'Семантика — це зміст команди, тобто що вона робить. Ця команда виводить на екран слово «Привіт!».',
+  'Запам’ятай ланцюжок: літери, слова, правила речення, зміст. Алфавіт, словник, синтаксис, семантика.']},
+ {t:'Мови низького і високого рівня',caps:[
+  'Серце комп’ютера — процесор. Він розуміє лише дві цифри: нуль і одиницю.',
+  'Програма з нулів та одиниць називається машинним кодом. Ось команда «запиши в пам’ять число 97». Людині її читати дуже важко.',
+  'Щоб стало трохи легше, придумали асемблер: замість нулів та одиниць — короткі слова-скорочення, наприклад MOV, «перемістити».',
+  'А в мовах високого рівня, як-от Python, та сама дія виглядає просто: x дорівнює 97.',
+  'Машинний код і асемблер — мови низького рівня, близькі до процесора. Python, Java, JavaScript, C++ і навіть Scratch — мови високого рівня, близькі до людської мови.']},
+ {t:'Транслятори: компілятор та інтерпретатор',caps:[
+  'Процесор не розуміє Python. Тому потрібен перекладач — програма-транслятор. Вона перекладає програму з мови високого рівня в машинний код.',
+  'Перший вид трансляторів — компілятор. Він перекладає всю програму цілком і створює готовий файл, який потім запускають. Як перекладач книжки.',
+  'Другий вид — інтерпретатор. Він бере одну команду, перекладає її і одразу виконує, потім бере наступну. Як синхронний перекладач.',
+  'Python — інтерпретована мова: команди перекладаються й виконуються одна за одною.']},
+ {t:'Інтерпретатор і помилка',fx:(st,b)=>{$$('.codebox .ln',st).forEach((l,k)=>{l.classList.toggle('run',k===b-1&&b<=2);l.classList.toggle('err',k===2&&b>=3);l.classList.toggle('skip',k===3&&b>=4)})},caps:[
+  'Подивімося, як інтерпретатор виконує програму з чотирьох рядків. Перший рядок — на екрані з’являється «Раз».',
+  'Другий рядок — з’являється «Два».',
+  'У третьому рядку замість print написано prnt. Такого слова Python не знає, тож він повідомляє про помилку і зупиняється.',
+  'Четвертий рядок так і не виконався. Інтерпретатор виконує команди по черзі і зупиняється на першій помилці. Помилку треба виправити й запустити програму знову.']},
+ {t:'Трохи історії',caps:[
+  'Перша в історії програма з’явилася ще 1843 року. Її склала англійська математикиня Ада Лавлейс для механічної обчислювальної машини Чарльза Беббіджа.',
+  'У 1955 році в Києві українська вчена Катерина Ющенко створила Адресну мову програмування — одну з перших мов високого рівня у світі.',
+  'Далі з’являлися Fortran для наукових розрахунків, BASIC і Pascal для навчання, мова C, якою написано багато операційних систем.',
+  'У 1991 році Гвідо ван Россум створив Python. Цікаво, що назву взято від комедійного шоу «Monty Python», а не від змії. У 1995 році з’явилися Java і JavaScript.',
+  'А у 2007 році з’явився Scratch — мова, з якою ти вже знайомий.']},
+ {t:'Сучасні мови програмування',caps:[
+  'Сьогодні мов програмування сотні. Python — для штучного інтелекту й аналізу даних. JavaScript — для сайтів. Kotlin і Java — для Android, Swift — для iPhone.',
+  'C++ — для швидких програм та ігрових рушіїв, C# — для ігор на Unity, SQL — для роботи з базами даних.',
+  'А от HTML і CSS — це мови розмітки та стилів. Вони описують, з чого складається сторінка і як вона виглядає, але алгоритмів не містять. Тому це не мови програмування.',
+  'Порівняй: щоб вивести «Привіт!» мовою C++, потрібно п’ять рядків, а мовою Python — один. Саме тому ми починаємо з Python.']},
+ {t:'Професії, де потрібно програмувати',caps:[
+  'Програмувати вміють розробники програм, веброзробники, розробники ігор і мобільних застосунків.',
+  'А ще тестувальники, які шукають помилки, аналітики даних, інженери штучного інтелекту та фахівці з кібербезпеки.',
+  'Програмування потрібне й поза ІТ: науковцям, інженерам, які створюють роботів і дрони, дизайнерам і навіть агрономам.',
+  'Уміння програмувати — як уміння писати: воно стане в пригоді в будь-якій професії. Час перевірити, що ти запам’ятав!']}
+];
+const QUESTIONS=[
+ {type:'single',label:'Вибір однієї відповіді',q:'Що таке комп’ютерна програма?',ref:0,opts:[
+  {t:'Будь-який текст, набраний на комп’ютері',w:'Текст у редакторі — це документ: комп’ютер його не виконує. Програма — це саме алгоритм, записаний мовою програмування.'},
+  {t:'Алгоритм, записаний мовою програмування і призначений для виконання комп’ютером',ok:true},
+  {t:'Пристрій усередині комп’ютера, який виконує команди',w:'Пристрій, що виконує команди, — це процесор. Програма — те, що він виконує.'},
+  {t:'Набір кольорових блоків, які існують лише у Scratch',w:'Scratch — лише одна з мов. Програми пишуть і текстовими мовами, наприклад Python.'}],
+  why:'Програма = алгоритм + мова програмування, а виконує її комп’ютер.'},
+ {type:'match',label:'Установлення відповідності',q:'Установи відповідність між складовою мови програмування та її описом.',ref:2,pairs:[
+  ['Алфавіт','Символи для запису програми: літери, цифри, знаки'],
+  ['Словник','Службові слова з визначеним значенням, наприклад print'],
+  ['Синтаксис','Правила запису команд: дужки, лапки, порядок'],
+  ['Семантика','Зміст команди — що саме вона робить']],
+  hint:'Згадай ланцюжок із рідної мови: літери → слова → правила речення → зміст.',
+  why:'Алфавіт — символи, словник — службові слова, синтаксис — правила запису, семантика — зміст.'},
+ {type:'multi',label:'Вибір кількох відповідей',q:'Обери всі мови програмування високого рівня.',ref:3,opts:[
+  {t:'Python',ok:true},{t:'Машинний код (10110000 01100001)',w:'Машинний код — нулі та одиниці для процесора, це найнижчий рівень.'},
+  {t:'Java',ok:true},{t:'Асемблер (MOV AL, 61h)',w:'Асемблер — мова низького рівня: кожна його команда відповідає одній команді процесора.'},
+  {t:'JavaScript',ok:true},{t:'Scratch',ok:true}],
+  why:'Мови високого рівня близькі до людської мови: Python, Java, JavaScript, Scratch.'},
+ {type:'single',label:'Міні-ситуація',q:'Програма-перекладач спочатку переклала ВЕСЬ текст гри в машинний код і створила готовий файл game.exe. Лише потім гру запустили. Який це транслятор?',ref:4,opts:[
+  {t:'Компілятор',ok:true},
+  {t:'Інтерпретатор',w:'Інтерпретатор не створює готового файлу: він перекладає й одразу виконує команди по одній.'},
+  {t:'Текстовий редактор',w:'Текстовий редактор лише дає змогу набрати текст програми. Перекладати його в машинний код він не вміє.'},
+  {t:'Операційна система',w:'Операційна система запускає програми, але не перекладає їхній текст у машинний код.'}],
+  why:'Компілятор — як перекладач книжки: спершу перекладає все, а потім ти маєш готовий результат.'},
+ {type:'single',label:'Прогнозування результату',q:'Python-інтерпретатор виконує цю програму. Що з’явиться на екрані?',code:'print("Раз")\nprint("Два")\nprnt("Три")\nprint("Чотири")',ref:5,opts:[
+  {t:'Раз, Два, Три, Чотири',w:'Придивись до рядка 3: там написано prnt замість print. Такого слова Python не знає.'},
+  {t:'Тільки повідомлення про помилку',w:'Інтерпретатор виконує команди по черзі, тож рядки 1 і 2 встигнуть виконатися ще до помилки.'},
+  {t:'Раз, Два, а потім повідомлення про помилку',ok:true},
+  {t:'Раз, Два, Чотири — рядок із помилкою буде пропущено',w:'Інтерпретатор не пропускає помилку: після неї виконання зупиняється, і рядок 4 не виконується.'}],
+  why:'Інтерпретатор виконує команди одну за одною і зупиняється на першій помилці.'},
+ {type:'single',label:'Вибір однієї відповіді',q:'Хто 1955 року в Києві створила Адресну мову програмування — одну з перших у світі мов високого рівня?',ref:6,opts:[
+  {t:'Ада Лавлейс',w:'Ада Лавлейс жила в XIX столітті й склала першу програму 1843 року — для механічної машини Беббіджа.'},
+  {t:'Катерина Ющенко',ok:true},
+  {t:'Грейс Гоппер',w:'Грейс Гоппер — американська програмістка, яка працювала над мовою COBOL.'},
+  {t:'Гвідо ван Россум',w:'Гвідо ван Россум — автор мови Python (1991).'}],
+  why:'Катерина Ющенко — українська вчена, авторка Адресної мови програмування.'},
+ {type:'match',label:'Установлення відповідності',q:'Для чого найчастіше використовують ці мови? Установи відповідність.',ref:7,pairs:[
+  ['Python','Штучний інтелект, аналіз даних'],['JavaScript','Інтерактивні вебсайти'],['Swift','Застосунки для iPhone'],['C#','Ігри на рушії Unity'],['SQL','Запити до баз даних']],
+  hint:'Swift створила Apple, а SQL розшифровується як «мова структурованих запитів».',
+  why:'Кожна мова має свою «спеціальність», хоча багато з них універсальні.'},
+ {type:'single',label:'Міні-ситуація',q:'Друг каже: «Я вже програміст — я зробив сторінку на HTML». Чи є HTML мовою програмування?',ref:7,opts:[
+  {t:'Так, будь-яка мова в ІТ — це мова програмування',w:'В ІТ є різні мови: програмування, розмітки, запитів. HTML описує будову сторінки, але алгоритмів не містить.'},
+  {t:'Ні, HTML — мова розмітки: вона описує, з чого складається сторінка, але не містить алгоритмів',ok:true},
+  {t:'Так, адже HTML-сторінку відкриває браузер, а браузер — це програма',w:'Браузер справді програма, але сам HTML-текст не є алгоритмом. Як рецепт не стає кухарем.'}],
+  why:'HTML і CSS описують вміст і вигляд сторінки. Щоб сторінка «оживала», її програмують мовою JavaScript.'}
+];
+
+/* ================== ЗБЕРЕЖЕННЯ ================== */
+const store={get(){try{return JSON.parse(localStorage.getItem(LESSON_KEY))||{}}catch(e){return{}}},
+ set(o){try{localStorage.setItem(LESSON_KEY,JSON.stringify(o))}catch(e){}}};
+let S=Object.assign({stage:0,seen:[0],th:0,thSeen:[],q:{},qi:0,ex:{},tts:false},store.get());
+const save=()=>store.set(S);
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),2200)}
+
+/* ================== НАВІГАЦІЯ ================== */
+$('#lessonSel').innerHTML=LESSONS.map(l=>`<option value="${l.n}" ${l.n===CUR?'selected':''}>${l.n==='ПР'?'Практична робота':'Урок '+l.n}${l.ready?'':' (скоро)'}</option>`).join('')+'<option value="menu">Усі матеріали розділу</option>';
+$('#lessonSel').addEventListener('change',e=>{const v=e.target.value;if(v==='menu'){location.href='../../index.html#s-7--python';return}
+ const l=LESSONS.find(x=>String(x.n)===v);if(!l||l.n===CUR)return;
+ if(!l.ready){toast('Цей урок ще готується');e.target.value=String(CUR);return}
+ location.href=l.href||`urok-${l.n}.html`});
+if($('#lessonCards'))$('#lessonCards').innerHTML=LESSONS.map(l=>`<div class="lcard ${l.n===CUR?'now':''}"><div class="num">${l.n==='ПР'?'Підсумок':'Урок '+l.n}${l.n===CUR?' · ти тут':''}</div><h3>${esc(l.t)}</h3><p>${esc(l.d)}</p></div>`).join('');
+$('#planList').innerHTML=STAGES.map((s,i)=>`<div><b>${i+1}. ${s.t}</b><span>≈ ${s.min} хв</span></div>`).join('');
+$('#stepsNav').innerHTML=STAGES.map((s,i)=>`<button type="button" data-stage="${i}"><span class="n">${i+1}</span>${s.t}</button>`).join('');
+{const nx=LESSONS[CUR],a=$('#nextLesson');if(a&&nx){a.href=nx.href||`urok-${nx.n}.html`;if(!nx.ready)a.addEventListener('click',e=>{e.preventDefault();toast('Наступний урок ще готується')})}}
+
+let mainPlayer,modalPlayer;
+function go(i){
+ i=Math.max(0,Math.min(STAGES.length-1,i));
+ if(mainPlayer)mainPlayer.stop();
+ S.stage=i;if(!S.seen.includes(i))S.seen.push(i);save();
+ $$('.stage').forEach((s,k)=>s.classList.toggle('cur',k===i));
+ $$('#stepsNav button').forEach((b,k)=>{b.classList.toggle('cur',k===i);b.classList.toggle('seen',S.seen.includes(k))});
+ const cb=$(`#stepsNav button[data-stage="${i}"]`);cb&&cb.scrollIntoView({inline:'center',block:'nearest'});
+ window.scrollTo({top:0,behavior:'smooth'});
+ if(STAGES[i].id==='teoria')mainPlayer.show(S.th||0);
+ if(STAGES[i].id==='dz')renderStats();
+}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(+g.dataset.go);
+ const st=e.target.closest('[data-stage]');if(st)go(+st.dataset.stage)});
+function askRestart(){$('#dlg').classList.add('show');$('#dlgYes').focus()}
+$('#btnRestart').addEventListener('click',askRestart);$('#btnRestart2').addEventListener('click',askRestart);
+$('#dlgNo').addEventListener('click',()=>$('#dlg').classList.remove('show'));
+$('#dlgYes').addEventListener('click',()=>{const t=S.tts;try{localStorage.removeItem(LESSON_KEY)}catch(e){}
+ S={stage:0,seen:[0],th:0,thSeen:[],q:{},qi:0,ex:{},tts:t};save();location.reload()});
+
+/* ================== ОЗВУЧКА ================== */
+const TTS={voice:null,ok:'speechSynthesis' in window,
+ init(){if(!this.ok)return;const pick=()=>{const v=speechSynthesis.getVoices();this.voice=v.find(x=>/^uk/i.test(x.lang))||null;$$('.tts-note').forEach(updNote)};pick();speechSynthesis.onvoiceschanged=pick},
+ can(){return this.ok&&!!this.voice},
+ speak(text,cb){if(!S.tts||!this.can()){cb&&cb(false);return}
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.voice=this.voice;u.lang=this.voice.lang;u.rate=.95;
+  let f=false;const end=()=>{if(f)return;f=true;cb&&cb(true)};u.onend=end;u.onerror=end;speechSynthesis.speak(u)}catch(e){cb&&cb(false)}},
+ cancel(){try{this.ok&&speechSynthesis.cancel()}catch(e){}}};
+function updNote(n){n.textContent=!TTS.ok?'Озвучка в цьому браузері недоступна. Текст завжди є в жовтому рядку.':
+ (TTS.voice?'':'У цьому браузері немає українського голосу для озвучки. Спробуй Microsoft Edge, Chrome на Android або Safari на iPhone. Текст завжди є в жовтому рядку.')}
+
+/* ================== ПЛЕЄР ТЕОРІЇ ================== */
+function playerMarkup(){return `<div class="player">
+ <div class="tp-head"><div><div class="tp-count"></div><div class="tp-title"></div></div><div class="tp-dots"></div></div>
+ <div class="tp-stage"></div>
+ <div class="tp-cap" aria-live="polite"><span class="ico">i</span><span class="tp-text"></span></div>
+ <div class="tp-ctrl"><div class="row"><button class="btn" data-a="prev" type="button">← Попередній крок</button><button class="btn" data-a="replay" type="button">Повторити крок</button></div>
+ <div class="row"><button class="btn" data-a="pause" type="button">Пауза</button><button class="btn" data-a="all" type="button">Показати все</button><button class="btn" data-a="tts" type="button">Озвучка: вимк.</button><button class="btn pri" data-a="next" type="button">Наступний крок →</button></div></div>
+ <div class="tts-note"></div></div>`}
+class Player{
+ constructor(root,main){this.root=root;this.main=main;root.innerHTML=playerMarkup();
+  this.st=$('.tp-stage',root);this.cap=$('.tp-text',root);this.i=0;this.beat=0;this.tok=0;this.paused=false;this.timers=[];
+  $('.tp-dots',root).innerHTML=THEORY.map((t,k)=>`<button type="button" data-k="${k}" title="${esc(t.t)}">${k+1}</button>`).join('');
+  root.addEventListener('click',e=>{const d=e.target.closest('[data-k]');if(d){this.show(+d.dataset.k);return}
+   const a=e.target.closest('[data-a]');if(!a)return;const act=a.dataset.a;
+   if(act==='prev')this.show(this.i-1);if(act==='next'){if(this.i<THEORY.length-1)this.show(this.i+1);else if(this.main)go(STAGES.findIndex(s=>s.id==='testy'))}
+   if(act==='replay')this.show(this.i);if(act==='all')this.showAll();if(act==='pause')this.togglePause();
+   if(act==='tts'){S.tts=!S.tts;save();$$('[data-a="tts"]').forEach(b=>b.textContent='Озвучка: '+(S.tts?'увімк.':'вимк.'));
+    if(S.tts&&!TTS.can())toast('Український голос недоступний у цьому браузері');
+    if(S.tts&&TTS.can()){this.clear();this.speakCur()}else{TTS.cancel()}}});
+  $('[data-a="tts"]',root).textContent='Озвучка: '+(S.tts?'увімк.':'вимк.');updNote($('.tts-note',root))}
+ clear(){this.timers.forEach(clearTimeout);this.timers=[];this.tok++}
+ stop(){this.clear();TTS.cancel()}
+ show(i){if(i<0||i>=THEORY.length)return;this.stop();this.i=i;this.beat=0;this.paused=false;$('[data-a="pause"]',this.root).textContent='Пауза';
+  const T=THEORY[i];this.st.innerHTML='';this.st.appendChild(document.getElementById('ts'+i).content.cloneNode(true));
+  $('.tp-title',this.root).textContent=T.t;$('.tp-count',this.root).textContent=`Крок ${i+1} з ${THEORY.length}`;
+  if(this.main){S.th=i;if(!S.thSeen.includes(i))S.thSeen.push(i);save()}
+  $$('.tp-dots button',this.root).forEach((b,k)=>{b.classList.toggle('cur',k===i);b.classList.toggle('seen',this.main?S.thSeen.includes(k):false)});
+  $('[data-a="prev"]',this.root).disabled=i===0;
+  $('[data-a="next"]',this.root).textContent=i<THEORY.length-1?'Наступний крок →':(this.main?'До тестів →':'Наступний крок →');
+  $('[data-a="next"]',this.root).disabled=!this.main&&i===THEORY.length-1;
+  this.nextBeat()}
+ apply(){const b=this.beat;
+  $$('[data-b]',this.st).forEach(el=>{if(+el.dataset.b<=b&&!el.classList.contains('on')){el.classList.add('on');$$('[data-type]',el).forEach(typeIt)}});
+  $$('[data-h]',this.st).forEach(el=>el.classList.toggle('hl',el.dataset.h.split(',').map(Number).includes(b)));
+  const fx=THEORY[this.i].fx;if(fx)fx(this.st,b)}
+ nextBeat(){const caps=THEORY[this.i].caps;if(this.beat>=caps.length){this.cap.textContent=caps[caps.length-1]+(this.main&&this.i<THEORY.length-1?'  (Натисни «Наступний крок».)':'');return}
+  this.beat++;this.apply();this.cap.textContent=caps[this.beat-1];this.speakCur()}
+ speakCur(){if(this.paused)return;const tok=++this.tok;const text=THEORY[this.i].caps[this.beat-1]||'';
+  const cont=()=>{if(tok!==this.tok||this.paused)return;this.timers.push(setTimeout(()=>{if(tok===this.tok)this.nextBeat()},700))};
+  if(S.tts&&TTS.can()){TTS.speak(text,cont);this.timers.push(setTimeout(()=>{if(tok===this.tok){TTS.cancel();cont()}},text.length*110+6000))}
+  else this.timers.push(setTimeout(()=>{if(tok===this.tok)this.nextBeat()},Math.max(3500,text.length*62)))}
+ togglePause(){this.paused=!this.paused;$('[data-a="pause"]',this.root).textContent=this.paused?'Продовжити':'Пауза';
+  if(this.paused){this.clear();TTS.cancel()}else this.speakCur()}
+ showAll(){this.stop();const caps=THEORY[this.i].caps;this.beat=caps.length;$$('[data-b]',this.st).forEach(el=>{if(!el.classList.contains('on')){el.classList.add('on');$$('[data-type]',el).forEach(typeIt)}});
+  this.apply();this.cap.textContent=caps.join(' ')}
+}
+function typeIt(el){if(el.dataset.done)return;el.dataset.done=1;const full=el.textContent;el.textContent='';let k=0;
+ const iv=setInterval(()=>{el.textContent=full.slice(0,++k);if(k>=full.length)clearInterval(iv)},55)}
+
+/* ================== АКТУАЛІЗАЦІЯ ================== */
+const RECIPE=[
+ {t:'Налий у каструлю 1 л води'},{t:'Поклади в каструлю 5 очищених картоплин'},
+ {t:'Посоли трохи',err:'Помилка! Скільки це — «трохи»? 1 г? 50 г? Пів пачки?',
+  q:'Як переписати команду, щоб робот виконав її точно?',opts:[['Посоли як слід',false,'«Як слід» — теж неточно. Робот не знає, скільки це.'],['Додай 5 г солі',true],['Посоли на свій смак',false,'У робота немає смаку, йому потрібне точне число.']]},
+ {t:'Вари до готовності',err:'Помилка! Як я дізнаюся, що картопля вже «готова»?',
+  q:'Обери точну команду для робота.',opts:[['Вари, поки не звариться',false,'Це те саме «до готовності». Робот не може цього перевірити.'],['Вари довго',false,'«Довго» — це скільки? 5 хвилин чи година?'],['Вари 20 хвилин після закипання',true]]}
+];
+const rFixed={};let rBusy=false;
+function drawRecipe(){$('#recipe').innerHTML=RECIPE.map((r,i)=>`<li data-i="${i}" class="${rFixed[i]?'fixed':''}"><span>${esc(rFixed[i]||r.t)}</span></li>`).join('')}
+drawRecipe();
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+$('#rRun').addEventListener('click',async()=>{if(rBusy)return;rBusy=true;$('#rFix').style.display='none';drawRecipe();
+ const bub=$('#rBubble'),rob=$('#robot');bub.className='bubble';
+ for(let i=0;i<RECIPE.length;i++){const li=$(`#recipe li[data-i="${i}"]`);li.classList.add('run');bub.textContent='Виконую: «'+(rFixed[i]||RECIPE[i].t)+'»';
+  await sleep(1100);li.classList.remove('run');
+  if(RECIPE[i].err&&!rFixed[i]){li.classList.add('err');bub.textContent=RECIPE[i].err;bub.className='bubble err';rob.classList.remove('shake');void rob.offsetWidth;rob.classList.add('shake');showFix(i);rBusy=false;return}
+  li.classList.add('done')}
+ bub.textContent='Готово! Картопля зварена. Дякую за точні команди!';bub.className='bubble good';rBusy=false;
+ $('#rConclusion').style.display='block';S.aktDone=true;save()});
+function showFix(i){const r=RECIPE[i],box=$('#rFix');box.style.display='block';
+ box.innerHTML=`<b>${esc(r.q)}</b><div class="opts" style="margin-top:8px">${r.opts.map((o,k)=>`<button class="opt" type="button" data-k="${k}"><span class="mk"></span><span>${esc(o[0])}</span></button>`).join('')}</div><p class="fbm" style="margin-top:8px"></p>`;
+ $$('.opt',box).forEach(b=>b.addEventListener('click',()=>{const o=r.opts[+b.dataset.k];
+  if(o[1]){b.classList.add('good');rFixed[i]=o[0];$('.fbm',box).innerHTML='<b style="color:var(--ok)">Точно!</b> Тепер запусти робота ще раз.';$$('.opt',box).forEach(x=>x.disabled=true);drawRecipe()}
+  else{b.classList.add('wrong');$('.fbm',box).textContent=o[2]}}))}
+$('#rReveal').addEventListener('click',()=>{$('#rAnswer').style.display='block'});
+
+/* ================== ТЕСТИ ================== */
+const qState=i=>S.q[i]||(S.q[i]={tries:0,done:false,first:false});
+let curSel=[];
+function renderQuiz(){const i=S.qi,Q=QUESTIONS[i],st=qState(i);curSel=[];
+ const dots=QUESTIONS.map((q,k)=>{const s=S.q[k];return `<button type="button" data-qi="${k}" class="${k===i?'cur':''} ${s&&s.done?'ok':(s&&s.tries?'tried':'')}" aria-label="Питання ${k+1}">${k+1}</button>`}).join('');
+ let body='';
+ if(Q.type==='single'||Q.type==='multi'){const order=Q._ord||(Q._ord=shuffle(Q.opts.map((o,k)=>k)));
+  body=`<div class="opts">${order.map(k=>`<button type="button" class="opt ${Q.type==='multi'?'multi':''}" data-o="${k}"><span class="mk"></span><span>${esc(Q.opts[k].t)}</span></button>`).join('')}</div>`}
+ if(Q.type==='match'){const rights=Q._r||(Q._r=shuffle(Q.pairs.map(p=>p[1])));
+  body=`<div class="match">${Q.pairs.map((p,k)=>`<div class="mrow" data-m="${k}"><b>${esc(p[0])}</b><select aria-label="${esc(p[0])}"><option value="">— обери —</option>${rights.map(r=>`<option>${esc(r)}</option>`).join('')}</select></div>`).join('')}</div>`}
+ $('#quiz').innerHTML=`<div class="qhead"><span class="qtype">Питання ${i+1} з ${QUESTIONS.length} · ${Q.label}</span><div class="qdots">${dots}</div></div>
+  <div class="qtext">${esc(Q.q)}</div>${Q.code?`<div class="codebox" style="margin-bottom:14px">${esc(Q.code)}</div>`:''}
+  ${body}<div class="row" style="margin-top:14px"><button class="btn blue" id="qCheck" type="button">Перевірити</button></div><div class="fb" id="qFb"></div>`;
+ $$('.qdots button').forEach(b=>b.addEventListener('click',()=>{S.qi=+b.dataset.qi;save();renderQuiz()}));
+ $$('#quiz .opt').forEach(b=>b.addEventListener('click',()=>{const k=+b.dataset.o;
+  if(Q.type==='single'){curSel=[k];$$('#quiz .opt').forEach(x=>x.classList.toggle('sel',x===b))}
+  else{curSel=curSel.includes(k)?curSel.filter(x=>x!==k):curSel.concat(k);b.classList.toggle('sel')}}));
+ $('#qCheck').addEventListener('click',checkQ);
+ if(st.done)showCorrect(true)}
+function checkQ(){const i=S.qi,Q=QUESTIONS[i],st=qState(i);let ok=false,msg='';
+ if(Q.type==='single'){if(!curSel.length){toast('Спочатку обери відповідь');return}
+  const o=Q.opts[curSel[0]];ok=!!o.ok;msg=o.w||'';}
+ if(Q.type==='multi'){if(!curSel.length){toast('Обери хоча б одну відповідь');return}
+  const need=Q.opts.map((o,k)=>o.ok?k:-1).filter(k=>k>=0);const wrong=curSel.filter(k=>!Q.opts[k].ok),miss=need.filter(k=>!curSel.includes(k));
+  ok=!wrong.length&&!miss.length;msg=wrong.map(k=>Q.opts[k].w).join(' ')+(miss.length?` Ти обрав не всі правильні варіанти: бракує ще ${miss.length}.`:'');
+  $$('#quiz .opt').forEach(b=>{const k=+b.dataset.o;if(curSel.includes(k))b.classList.add(Q.opts[k].ok?'good':'wrong')})}
+ if(Q.type==='match'){const rows=$$('#quiz .mrow');let good=0,empty=0;
+  rows.forEach(r=>{const k=+r.dataset.m,v=$('select',r).value;if(!v)empty++;const g=v===Q.pairs[k][1];if(g)good++;r.classList.toggle('good',g);r.classList.toggle('wrong',!g&&!!v)});
+  if(empty){toast('Заповни всі пари');rows.forEach(r=>r.classList.remove('good','wrong'));return}
+  ok=good===Q.pairs.length;msg=`Правильних пар: ${good} з ${Q.pairs.length}. ${Q.hint||''}`}
+ if(Q.type==='single')$$('#quiz .opt').forEach(b=>{if(+b.dataset.o===curSel[0])b.classList.add(ok?'good':'wrong')});
+ if(!st.done)st.tries++;
+ if(ok){if(!st.done&&st.tries===1)st.first=true;st.done=true;save();showCorrect(false);return}
+ save();const fb=$('#qFb');fb.className='fb show bad';
+ fb.innerHTML=`<h4>Поки що не так</h4><p>${esc(msg)}</p><p>Цю тему пояснено в кроці теорії <b>«${esc(THEORY[Q.ref].t)}»</b>.</p>
+  <div class="row"><button class="btn pri" id="qTheory" type="button">Переглянути крок теорії</button><button class="btn" id="qRetry" type="button">Спробувати ще раз</button>${st.tries>=3?'<button class="btn" id="qShow" type="button">Показати правильну відповідь</button>':''}</div>`;
+ $$('#quiz .opt').forEach(b=>b.disabled=true);$$('#quiz select').forEach(s=>s.disabled=true);$('#qCheck').disabled=true;
+ $('#qTheory').addEventListener('click',()=>openTheory(Q.ref));$('#qRetry').addEventListener('click',renderQuiz);
+ const sh=$('#qShow');sh&&sh.addEventListener('click',()=>{st.done=true;save();showCorrect(true)})}
+function showCorrect(restored){const i=S.qi,Q=QUESTIONS[i];
+ if(Q.type!=='match')$$('#quiz .opt').forEach(b=>{const o=Q.opts[+b.dataset.o];b.disabled=true;b.classList.remove('wrong','sel');if(o.ok)b.classList.add('good')});
+ else $$('#quiz .mrow').forEach(r=>{const s=$('select',r);s.value=Q.pairs[+r.dataset.m][1];s.disabled=true;r.classList.remove('wrong');r.classList.add('good')});
+ $('#qCheck').disabled=true;const fb=$('#qFb');fb.className='fb show good';
+ const last=i===QUESTIONS.length-1;
+ fb.innerHTML=`<h4>${restored?'Правильна відповідь':'Правильно!'}</h4><p>${esc(Q.why)}</p><div class="row"><button class="btn pri" id="qNext" type="button">${last?'Підсумок тесту':'Наступне питання →'}</button></div>`;
+ $('#qNext').addEventListener('click',()=>{if(last)quizSummary();else{S.qi=i+1;save();renderQuiz()}});
+ $$('.qdots button')[i].classList.add('ok')}
+function quizSummary(){const done=QUESTIONS.filter((q,k)=>S.q[k]&&S.q[k].done).length,first=QUESTIONS.filter((q,k)=>S.q[k]&&S.q[k].first).length;
+ const left=QUESTIONS.map((q,k)=>k).filter(k=>!(S.q[k]&&S.q[k].done));
+ $('#quiz').innerHTML=`<h3>Підсумок тесту</h3><div class="stat"><div><b>${first} з ${QUESTIONS.length}</b>правильно з першої спроби</div><div><b>${done} з ${QUESTIONS.length}</b>питань розв’язано</div></div>
+ <p>${first>=7?'Чудово! Ти добре зрозумів тему.':first>=5?'Добре! Переглянь кроки теорії, де були помилки.':'Варто ще раз переглянути теорію і пройти тест знову.'}</p>
+ <div class="row">${left.length?`<button class="btn blue" id="qLeft" type="button">До нерозв’язаного питання</button>`:''}<button class="btn" id="qAgain" type="button">Пройти тест ще раз</button><button class="btn pri" data-go="5" type="button">До закріплення →</button></div>`;
+ const ql=$('#qLeft');ql&&ql.addEventListener('click',()=>{S.qi=left[0];save();renderQuiz()});
+ $('#qAgain').addEventListener('click',()=>{S.q={};S.qi=0;QUESTIONS.forEach(q=>{delete q._ord;delete q._r});save();renderQuiz()})}
+function openTheory(k){$('#thModal').classList.add('show');modalPlayer.show(k);$('#thClose').focus()}
+$('#thClose').addEventListener('click',()=>{modalPlayer.stop();$('#thModal').classList.remove('show');renderQuiz()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#thModal').classList.contains('show'))$('#thClose').click()});
+
+/* ================== ВПРАВИ ================== */
+const EX=[
+ {id:'e1',type:'Знайди та виправ помилку',title:'Де порушено синтаксис?',
+  instr:'У програмі три рядки. В одному з них порушено правила запису (синтаксис). Натисни на рядок із помилкою, а потім обери, як його виправити.',
+  hints:['Порівняй рядки між собою. Що є в усіх правильних рядках, а в одному — ні?','Подивись на лапки: кожна відкрита лапка має бути закрита перед дужкою.']},
+ {id:'e2',type:'Упорядкуй кроки',title:'Шлях від ідеї до працюючої програми',
+  instr:'Розстав кроки в правильному порядку. Перетягни картку або скористайся стрілками.',
+  hints:['Спочатку треба зрозуміти, ЩО має робити програма, і лише потім думати, ЯК.','Транслятор може перекласти лише те, що вже записано мовою програмування.']},
+ {id:'e3',type:'Класифікація',title:'Розклади по поличках',
+  instr:'Розподіли мови по трьох групах. Натисни на картку, а потім на групу (або перетягни картку).',
+  hints:['Мови низького рівня найближчі до процесора: це нулі й одиниці або короткі скорочення-команди.','HTML і CSS описують сторінку, але не містять алгоритмів.']},
+ {id:'e4',type:'Міні-кейс',title:'Порадь друзям мову програмування',
+  instr:'Друзі мають різні мрії. Порадь кожному мову, з якої варто почати.',
+  hints:['Згадай крок теорії «Сучасні мови програмування». У кожної мови своя «спеціальність».','Unity — це рушій для ігор, а Swift створила компанія Apple.']},
+ {id:'e5',type:'Із зірочкою · необов’язково',star:true,title:'Твоя перша програма на Python',
+  instr:'Тут працює справжній Python. Зміни текст у лапках на своє ім’я, наприклад «Привіт, я Оля!», і натисни «Запустити». Потім спробуй спеціально зробити помилку: прибери одну лапку й подивись, що станеться.',
+  hints:['Текст для виведення має бути всередині лапок, а лапки — всередині дужок.','Правильний вигляд: print("Привіт, я Оля!")']}
+];
+function exShell(e,i){return `<div class="ex ${S.ex[e.id]?'done':''}" id="${e.id}"><div class="ex-h"><h3>Вправа ${i+1}. ${esc(e.title)}</h3><span class="ex-type ${e.star?'star':''}">${esc(e.type)}</span></div>
+ <p>${esc(e.instr)}</p><div class="ex-body"></div><div class="res"></div>
+ <div class="hints"><button class="btn" type="button" data-h="0">Підказка 1</button><button class="btn" type="button" data-h="1" disabled>Підказка 2</button></div>
+ <div class="hint" data-ht="0">${esc(e.hints[0])}</div><div class="hint" data-ht="1">${esc(e.hints[1])}</div></div>`}
+$('#exercises').innerHTML=EX.map(exShell).join('');
+EX.forEach(e=>{const r=$('#'+e.id);$$('[data-h]',r).forEach(b=>b.addEventListener('click',()=>{const k=+b.dataset.h;$(`[data-ht="${k}"]`,r).classList.add('show');
+ const n=$(`[data-h="${k+1}"]`,r);if(n)n.disabled=false}))});
+function exRes(id,ok,html){const r=$('#'+id),res=$('.res',r);res.className='res show '+(ok?'good':'bad');res.innerHTML=html;
+ if(ok){r.classList.add('done');S.ex[id]=true;save()}}
+
+/* e1 */
+{const r=$('#e1 .ex-body');const L=['print("Добрий день!")','print("Мене звати Python)','print("Я вмію рахувати")'];
+ const hl=s=>esc(s).replace(/^print/,'<span class="k">print</span>');
+ r.innerHTML=`<div class="codebox lines">${L.map((l,k)=>`<span class="ln" data-l="${k}" role="button" tabindex="0">${k+1}  ${hl(l)}</span>`).join('')}</div><div class="e1fix" style="margin-top:12px"></div>`;
+ $$('.ln',r).forEach(el=>{const pick=()=>{$$('.ln',r).forEach(x=>x.classList.remove('pick'));el.classList.add('pick');
+  if(+el.dataset.l!==1){exRes('e1',false,'Цей рядок записано правильно: текст у лапках, лапки в дужках. Пошукай інший.');$('.e1fix',r).innerHTML='';return}
+  $('.res',$('#e1')).className='res';
+  const F=[['print("Мене звати Python)"',false,'Лапку поставлено після дужки, а має бути перед нею: текст закривається лапкою, потім закривається дужка.'],['print(Мене звати Python)',false,'Без лапок Python сприйме слова як імена, а не як текст.'],['print("Мене звати Python")',true]];
+  $('.e1fix',r).innerHTML=`<b>Знайшов! Тепер обери правильне виправлення:</b><div class="opts" style="margin-top:8px">${shuffle(F).map(f=>`<button type="button" class="opt" data-ok="${f[1]}" data-w="${esc(f[2]||'')}"><span class="mk"></span><code>${esc(f[0])}</code></button>`).join('')}</div>`;
+  $$('.e1fix .opt',r).forEach(b=>b.addEventListener('click',()=>{if(b.dataset.ok==='true'){b.classList.add('good');$$('.e1fix .opt',r).forEach(x=>x.disabled=true);
+   exRes('e1',true,'<b>Правильно!</b> У рядку 2 не було закривної лапки. Це <b>синтаксична помилка</b> — порушення правил запису. З такою помилкою Python програму навіть не запустить.')}
+   else{b.classList.add('wrong');exRes('e1',false,esc(b.dataset.w))}}))};
+  el.addEventListener('click',pick);el.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();pick()}})})}
+
+/* e2 */
+{const r=$('#e2 .ex-body');const OK=['Поставити задачу: що має робити програма','Скласти алгоритм розв’язування','Записати алгоритм мовою програмування','Транслятор перекладає програму в машинний код','Комп’ютер виконує програму','Перевірити результат і виправити помилки'];
+ let ord=shuffle(OK);if(ord.join()===OK.join())ord=ord.slice().reverse();
+ const draw=()=>{$('ol',r).innerHTML=ord.map((t,k)=>`<li data-t="${esc(t)}"><span class="grip" aria-hidden="true">⋮⋮</span><span class="txt">${esc(t)}</span><button class="mv" type="button" data-up="${k}" aria-label="Вгору">↑</button><button class="mv" type="button" data-dn="${k}" aria-label="Вниз">↓</button></li>`).join('')};
+ r.innerHTML='<ol class="sortlist"></ol><div class="row" style="margin-top:10px"><button class="btn blue" type="button" id="e2c">Перевірити</button></div>';draw();
+ const ol=$('ol',r);
+ ol.addEventListener('click',e=>{const u=e.target.closest('[data-up]'),d=e.target.closest('[data-dn]');
+  if(u){const k=+u.dataset.up;if(k>0){[ord[k-1],ord[k]]=[ord[k],ord[k-1]];draw()}}
+  if(d){const k=+d.dataset.dn;if(k<ord.length-1){[ord[k+1],ord[k]]=[ord[k],ord[k+1]];draw()}}});
+ if(window.Sortable)Sortable.create(ol,{animation:150,handle:'.grip',onEnd:()=>{ord=$$('li',ol).map(li=>li.dataset.t);draw()}});
+ $('#e2c').addEventListener('click',()=>{let good=0;$$('li',ol).forEach((li,k)=>{const g=li.dataset.t===OK[k];if(g)good++;li.classList.toggle('good',g);li.classList.toggle('wrong',!g)});
+  if(good===OK.length)exRes('e2',true,'<b>Чудово!</b> Задача → алгоритм → програма → переклад → виконання → перевірка. Програмісти проходять цей шлях постійно.');
+  else exRes('e2',false,`На своїх місцях ${good} з ${OK.length} кроків (позначено зеленим). Переставте інші.`)})}
+
+/* e3 */
+{const r=$('#e3 .ex-body');const IT=[['10110000 01100001','lo'],['MOV AL, 61h','lo'],['Python','hi'],['JavaScript','hi'],['C++','hi'],['Scratch','hi'],['HTML','no'],['CSS','no']];
+ const B=[['lo','Мови низького рівня'],['hi','Мови високого рівня'],['no','Не мови програмування']];
+ r.innerHTML=`<div class="pool" data-bk="pool">${shuffle(IT).map(it=>`<button type="button" class="chip" data-v="${it[1]}">${esc(it[0])}</button>`).join('')}</div>
+ <div class="buckets">${B.map(b=>`<div class="bucket" data-bk="${b[0]}"><h4>${b[1]}</h4><div class="in" data-bk="${b[0]}"></div></div>`).join('')}</div>
+ <div class="row" style="margin-top:10px"><button class="btn blue" type="button" id="e3c">Перевірити</button></div>`;
+ let sel=null;
+ r.addEventListener('click',e=>{const c=e.target.closest('.chip');if(c){e.stopPropagation();if(sel===c){c.classList.remove('sel');sel=null;return}
+   if(sel)sel.classList.remove('sel');sel=c;c.classList.add('sel');return}
+  const bk=e.target.closest('[data-bk]');if(bk&&sel){const tgt=bk.classList.contains('bucket')?$('.in',bk):bk;tgt.appendChild(sel);sel.classList.remove('sel','good','wrong');sel=null}});
+ if(window.Sortable){[$('.pool',r),...$$('.in',r)].forEach(el=>Sortable.create(el,{group:'e3',animation:150,onAdd:ev=>ev.item.classList.remove('good','wrong')}))}
+ $('#e3c').addEventListener('click',()=>{const left=$$('.pool .chip',r).length;if(left){exRes('e3',false,`Ще ${left} карт. не розкладено.`);return}
+  let bad=0;$$('.in .chip',r).forEach(c=>{const g=c.dataset.v===c.parentElement.dataset.bk;c.classList.toggle('good',g);c.classList.toggle('wrong',!g);if(!g)bad++});
+  if(!bad)exRes('e3',true,'<b>Усе на своїх місцях!</b> Машинний код і асемблер — низький рівень; Python, JavaScript, C++, Scratch — високий; HTML і CSS — мови розмітки та стилів.');
+  else exRes('e3',false,`Помилок: ${bad} (позначено червоним). Перенеси ці картки в інші групи.`)})}
+
+/* e4 */
+{const r=$('#e4 .ex-body');const C=[['Марта хоче створити власну гру на рушії Unity.','C#'],['Денис хоче додати на шкільний сайт інтерактивну вікторину.','JavaScript'],['Софія мріє про власний застосунок для iPhone.','Swift'],['Іван хоче навчити програму розпізнавати породи собак на фото.','Python']];
+ const O=['Python','JavaScript','Swift','C#','SQL','HTML'];
+ r.innerHTML=C.map((c,k)=>`<div class="case" data-c="${k}"><span>${esc(c[0])}</span><select aria-label="Мова для: ${esc(c[0])}"><option value="">— мова —</option>${O.map(o=>`<option>${o}</option>`).join('')}</select></div>`).join('')+'<div class="row"><button class="btn blue" type="button" id="e4c">Перевірити</button></div>';
+ $('#e4c').addEventListener('click',()=>{let good=0,empty=0;$$('.case',r).forEach(el=>{const v=$('select',el).value,g=v===C[+el.dataset.c][1];if(!v)empty++;if(g)good++;el.classList.toggle('good',g);el.classList.toggle('wrong',!g&&!!v)});
+  if(empty){exRes('e4',false,'Порадь мову кожному з друзів.');return}
+  if(good===C.length)exRes('e4',true,'<b>Влучно!</b> C# — Unity, JavaScript — сайти, Swift — iPhone, Python — штучний інтелект.');
+  else exRes('e4',false,`Влучних порад: ${good} з ${C.length}.`)})}
+
+/* e5 Pyodide */
+{const r=$('#e5 .ex-body');r.innerHTML=`<textarea class="ed" id="e5code" spellcheck="false" aria-label="Код Python">print("Привіт, світе!")</textarea>
+ <div class="row" style="margin-top:10px"><button class="btn pri" type="button" id="e5run">Запустити</button><button class="btn" type="button" id="e5reset">Відновити приклад</button><span id="e5st" style="color:var(--mute);font-size:14px"></span></div>
+ <div class="caption-tag" style="margin-top:10px">Результат</div><div class="console" id="e5out"></div>`;
+ let py=null,loading=null;
+ async function load(){if(py)return py;if(loading)return loading;$('#e5st').textContent='Завантажую Python (лише перший раз, ≈ 10–30 с)…';
+  loading=new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';s.onload=res;s.onerror=()=>rej(new Error('net'));document.head.appendChild(s)})
+   .then(()=>loadPyodide()).then(p=>{py=p;$('#e5st').textContent='Python готовий';return p});
+  return loading}
+ $('#e5reset').addEventListener('click',()=>{$('#e5code').value='print("Привіт, світе!")'});
+ $('#e5run').addEventListener('click',async()=>{const out=$('#e5out');out.textContent='';$('#e5run').disabled=true;
+  try{const p=await load();let buf='';p.setStdout({batched:s=>{buf+=s+'\n'}});p.setStderr({batched:s=>{buf+=s+'\n'}});
+   try{await p.runPythonAsync($('#e5code').value);out.textContent=buf||'(програма нічого не вивела)';
+    const code=$('#e5code').value;if(buf.trim()&&!/Привіт, світе!/.test(buf))exRes('e5',true,'<b>Вітаємо з першою програмою!</b> Ти щойно написав і запустив код на Python. Детальніше про print() — на уроці 3.');
+    else if(buf.trim())exRes('e5',false,'Програма працює! Тепер зміни текст у лапках на свій.')}
+   catch(err){const m=String(err.message||err).trim().split('\n');const last=m[m.length-1];out.innerHTML=esc(buf)+'<span class="e">'+esc(last)+'</span>';
+    exRes('e5',false,/SyntaxError/.test(last)?'Це <b>синтаксична помилка</b> (SyntaxError): порушено правила запису. Перевір дужки й лапки.':/NameError/.test(last)?'<b>NameError</b>: Python не знає такого слова. Можливо, помилка в слові print або забуто лапки навколо тексту.':'Сталася помилка. Перевір запис команди.')}}
+  catch(e){out.innerHTML='<span class="e">Не вдалося завантажити Python. Перевір підключення до інтернету й спробуй ще раз.</span>';$('#e5st').textContent='';loading=null}
+  $('#e5run').disabled=false})}
+
+/* ================== ДЗ / ПІДСУМОК ================== */
+function renderStats(){const first=QUESTIONS.filter((q,k)=>S.q[k]&&S.q[k].first).length,done=QUESTIONS.filter((q,k)=>S.q[k]&&S.q[k].done).length;
+ const ex=EX.filter(e=>!e.star&&S.ex[e.id]).length;
+ $('#stats').innerHTML=`<div><b>${S.thSeen.length} / ${THEORY.length}</b>кроків теорії переглянуто</div><div><b>${first} / ${QUESTIONS.length}</b>тестів з першої спроби</div><div><b>${ex} / 4</b>вправ виконано${S.ex.e5?' + вправа із зірочкою':''}</div>`+
+ (done<QUESTIONS.length||ex<4?`<div style="background:var(--mag-soft)"><b style="font-size:18px">Порада</b>Повернись до ${done<QUESTIONS.length?'тестів':''}${done<QUESTIONS.length&&ex<4?' і ':''}${ex<4?'вправ':''}, які ще не завершено.</div>`:'')}
+$('#btnCopyK').addEventListener('click',async()=>{const t=$$('#konspekt .kc').map(c=>c.innerText.trim()).join('\n\n');
+ try{await navigator.clipboard.writeText('Опорний конспект · Урок 1\n\n'+t);toast('Конспект скопійовано')}catch(e){toast('Не вдалося скопіювати — виділи текст вручну')}});
+$('#btnPrintK').addEventListener('click',()=>{try{window.print()}catch(e){toast('Друк недоступний у цьому вікні')}});
+
+/* ================== СТАРТ ================== */
+TTS.init();
+mainPlayer=new Player($('#mainPlayer'),true);
+modalPlayer=new Player($('#modalPlayer'),false);
+renderQuiz();
+go(S.stage||0);
+}
+</script>
+</body>
+</html>
